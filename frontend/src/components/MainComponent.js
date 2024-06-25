@@ -1,4 +1,3 @@
-// src/components/MainComponent.js
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import HomePage from './HomePage';
@@ -13,14 +12,16 @@ const MainComponent = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      <Container className="flex-grow-1 mt-4">
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/menu" element={<Menu />} />
-          <Route path="/reservation" element={<ReservationPage />} />
-          <Route path="/confirmation" element={<ReservationPageConfirmation />} />
-        </Routes>
-      </Container>
+      <main className="flex-grow-1" style={{ paddingTop: '90px' }}> {/* Add padding to the top */}
+        <Container>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/reservation" element={<ReservationPage />} />
+            <Route path="/confirmation" element={<ReservationPageConfirmation />} />
+          </Routes>
+        </Container>
+      </main>
       <Footer />
     </div>
   );
