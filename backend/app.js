@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { Sequelize } = require('sequelize');
+const sequelize = require('./db'); // Adjusted path
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -14,19 +14,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+const takeawayRoutes = require('./routes/takeawayRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
 
-// Database connection
-const sequelize = new Sequelize({
-  dialect: 'postgres',
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-});
+app.use('/api/takeaway', takeawayRoutes);
+app.use('/api/reservation', reservationRoutes); // Ensure this matches the route setup in reservationRoutes.js
 
 // Test the database connection
 async function testDatabaseConnection() {

@@ -1,23 +1,40 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db/db');
+const sequelize = require('../db');
 
-const Takeaway = sequelize.define('Takeaway', {
-  productName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  quantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  deliveryTime: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  totalPrice: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
+const TakeawayOrder = sequelize.define('TakeawayOrder', {
+    orderNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    customerName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    customerPhone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    itemsOrdered: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    totalAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+    },
+    pickupTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    confirmed: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    confirmedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
 });
 
-module.exports = Takeaway;
+module.exports = TakeawayOrder;

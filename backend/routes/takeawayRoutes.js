@@ -3,6 +3,6 @@ const router = express.Router();
 const takeawayController = require('../controllers/takeawayController');
 
 // Create a new takeaway order
-router.post('/takeaway/orders', takeawayController.createTakeawayOrder);
+router.post('/takeaway', takeawayController.createTakeawayOrder);
 
 module.exports = router;

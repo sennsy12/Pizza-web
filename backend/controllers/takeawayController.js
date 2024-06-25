@@ -1,5 +1,4 @@
 const Takeaway = require('../models/takeaway');
-const { sendTakeawaySMS } = require('../services/smsService');
 
 // Create a new takeaway order
 exports.createTakeawayOrder = async (req, res) => {
