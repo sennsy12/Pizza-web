@@ -53,7 +53,7 @@ const HomePage = () => {
         </div>
       </motion.div>
       <Container className="mt-3 mb-5">
-        <FeatureSection /> {/* Include the FeatureSection component */}
+        <FeatureSection /> 
       </Container>
     </Container>
   );

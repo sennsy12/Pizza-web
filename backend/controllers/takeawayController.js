@@ -32,7 +32,7 @@ exports.createTakeawayOrder = async (req, res) => {
     });
 
     // Send takeaway SMS
-    await sendTakeawaySMS(customerPhone, `Order confirmed! Total: $${totalAmount}. Pickup at: ${pickupTime}`);
+    await sendTakeawaySMS(customerPhone, `Thank you ${customerName} your Order is confirmed! Total: $${totalAmount}. Pickup at: ${pickupTime}`);
 
     res.status(201).json(newOrder);
   } catch (error) {
