@@ -4,6 +4,7 @@ import HomePage from './HomePage';
 import Menu from './Menu';
 import ReservationPage from './containers/reservationPage';
 import ReservationPageConfirmation from './containers/reservationPageConfirmation';
+import TakeawayPage from './containers/takeawayPage';
 import Header from './assets/Header';
 import Footer from './assets/Footer';
 import { Container } from 'react-bootstrap';
@@ -19,6 +20,7 @@ const MainComponent = () => {
             <Route path="/menu" element={<Menu />} />
             <Route path="/reservation" element={<ReservationPage />} />
             <Route path="/confirmation" element={<ReservationPageConfirmation />} />
+            <Route path="/takeaway" element={<TakeawayPage />} />
           </Routes>
         </Container>
       </main>

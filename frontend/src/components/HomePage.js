@@ -44,7 +44,7 @@ const HomePage = () => {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
                 >
-                  <Button as={Link} to="/order" variant="danger" size="lg" className="me-3 mb-3">Order Takeaway</Button>
+                  <Button as={Link} to="/takeaway" variant="danger" size="lg" className="me-3 mb-3">Order Takeaway</Button>
                   <Button as={Link} to="/reservation" variant="outline-light" size="lg" className="mb-3">Book a Table</Button>
                 </motion.div>
               </Col>
@@ -52,7 +52,7 @@ const HomePage = () => {
           </Container>
         </div>
       </motion.div>
-      <Container className="mt-3">
+      <Container className="mt-3 mb-5">
         <FeatureSection /> {/* Include the FeatureSection component */}
       </Container>
     </Container>

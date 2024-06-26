@@ -1,3 +1,4 @@
+// src/handlers/twilioHandler.js
 const twilio = require('twilio');
 const moment = require('moment');
 
@@ -18,4 +19,12 @@ const sendConfirmationSms = (to, confirmationNumber, reservationTime) => {
   });
 };
 
-module.exports = { sendConfirmationSms };
+const sendTakeawaySMS = (to, message) => {
+  return client.messages.create({
+    body: message,
+    from: process.env.TWILIO_PHONE_NUMBER,
+    to: to,
+  });
+};
+
+module.exports = { sendConfirmationSms, sendTakeawaySMS };

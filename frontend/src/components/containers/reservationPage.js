@@ -86,7 +86,7 @@ const ReservationForm = () => {
           <h2 className="text-center mb-4">Reserve Your Pizza Paradise</h2>
         </motion.div>
 
-        <Row className="justify-content-center">
+        <Row className="justify-content-center mb-3">
           <Col md={8}>
             <Card className="shadow-lg">
               <Card.Body>

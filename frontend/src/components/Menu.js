@@ -38,7 +38,7 @@ const pizzas = [
 
 const Menu = () => {
   return (
-    <Container className="mt-5">
+    <Container className="mt-5 mb-5">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}

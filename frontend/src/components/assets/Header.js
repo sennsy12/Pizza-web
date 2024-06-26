@@ -3,11 +3,12 @@ import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
+import pizzaromaLogo from './pizzaromaLogo.png'; // Import the logo image
 
 const StyledNavbar = styled(Navbar)`
   transition: all 0.3s ease;
   background-color: rgba(51, 51, 51, 0.8);
-  height: 50px;
+  height: 70px;
   
   &.navbar-scrolled {
     background-color: #ff6b6b !important;
@@ -100,8 +101,7 @@ const Header = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-          <Logo src="/path-to-your-logo.png" alt="Pizza Web Logo" />
-          <BrandText>Pizza Web</BrandText>
+        <Logo src={pizzaromaLogo} alt="Pizzaroma Logo" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -120,11 +120,11 @@ const Header = () => {
             <Button 
               variant="outline-light" 
               as={Link} 
-              to="/order" 
+              to="/takeaway" 
               className="ms-lg-3 mt-2 mt-lg-0"
               onClick={() => setExpanded(false)}
             >
-              Order Now
+              Order Takeaway
             </Button>
           </motion.div>
         </Navbar.Collapse>
