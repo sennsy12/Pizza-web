@@ -18,10 +18,23 @@ const TakeawayPage = () => {
   });
 
   const menu = [
-    { id: 1, name: 'Margherita', price: 10, image: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80' },
-    { id: 2, name: 'Pepperoni', price: 12, image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80' },
-    { id: 3, name: 'Vegetarian', price: 11, image: 'https://images.unsplash.com/photo-1511689660979-10d2b1aada49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80' },
-    { id: 4, name: 'Hawaiian', price: 13, image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80' },
+    // Pizzas
+    { id: 1, name: 'Margherita', price: 10, category: 'Pizza', image: 'https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Classic tomato and mozzarella' },
+    { id: 2, name: 'Pepperoni', price: 12, category: 'Pizza', image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Pepperoni and cheese' },
+    { id: 3, name: 'Vegetarian', price: 11, category: 'Pizza', image: 'https://images.unsplash.com/photo-1511689660979-10d2b1aada49?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Assorted vegetables' },
+    { id: 4, name: 'Hawaiian', price: 13, category: 'Pizza', image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Ham and pineapple' },
+    
+    // Drinks
+    { id: 5, name: 'Cola', price: 2, category: 'Drink', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Classic cola' },
+    { id: 6, name: 'Lemonade', price: 2.5, category: 'Drink', image: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Fresh squeezed lemonade' },
+    
+    // Sides
+    { id: 7, name: 'Garlic Bread', price: 4, category: 'Side', image: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Toasted bread with garlic butter' },
+    { id: 8, name: 'Caesar Salad', price: 6, category: 'Side', image: 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Classic Caesar salad' },
+    
+    // Desserts
+    { id: 9, name: 'Tiramisu', price: 5, category: 'Dessert', image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Italian coffee-flavored dessert' },
+    { id: 10, name: 'Chocolate Brownie', price: 4, category: 'Dessert', image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80', description: 'Rich chocolate brownie' },
   ];
 
   const addToCart = (item) => {
@@ -104,20 +117,20 @@ const TakeawayPage = () => {
   };
 
   return (
-    <Container fluid className="py-5">
+    <Container  className="py-5">
       <Row className="justify-content-center">
-        <Col md={12} lg={12}>
+        <Col xl={12} >
           <Card className="shadow-lg border-0 rounded-lg overflow-hidden">
             <Card.Body className="p-5">
-              <h2 className="text-center mb-4">Order Your Pizza</h2>
+              <h2 className="text-center mb-4">Order Your Meal</h2>
               <ProgressBar now={(step / 3) * 100} className="mb-5" style={{ height: '8px' }} />
               <Row>
-                <Col lg={6} className="pe-lg-4 mb-4 mb-lg-0">
+                <Col xl={8} className="pe-lg-4 mb-4 mb-lg-0">
                   <AnimatePresence initial={false} custom={step} exitBeforeEnter={false}>
                     {renderStep()}
                   </AnimatePresence>
                 </Col>
-                <Col lg={4}>
+                <Col xl={4}>
                   <OrderSummary
                     cart={cart}
                     totalPrice={totalPrice}

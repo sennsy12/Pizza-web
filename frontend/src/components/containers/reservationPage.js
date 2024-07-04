@@ -37,7 +37,7 @@ const ReservationForm = () => {
   };
 
   return (
-    <Container fluid className="p-0" style={{ paddingTop: '60px' }}> {/* Adjust padding to match header height */}
+    <Container className="p-0" style={{ paddingTop: '60px' }}> {/* Adjust padding to match header height */}
       <Carousel fade interval={5000} className="mb-4">
         <Carousel.Item>
           <img

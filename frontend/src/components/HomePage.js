@@ -7,7 +7,7 @@ import FeatureSection from './containers/HomePageFeature'; // Import the Feature
 
 const HomePage = () => {
   return (
-    <Container fluid className="p-0">
+    <Container fluid className="p-5">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
