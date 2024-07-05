@@ -7,18 +7,26 @@ import ReservationPageConfirmation from './containers/reservationPageConfirmatio
 import TakeawayPage from './containers/takeawayPage';
 import Header from './assets/Header';
 import Footer from './assets/Footer';
+import AdminDashboard from './admin/AdminDashboard';
+import AdminReservations from './admin/AdminReservations';
+import AdminTakeawayOrders from './admin/AdminTakeawayOrders';
+import LoginPage from './containers/LoginPage'; // Create this for authentication
 
 const MainComponent = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      <main className="flex-grow-1" style={{ paddingTop: '90px' }}> {/* Add padding to the top */}
+      <main className="flex-grow-1" style={{ paddingTop: '90px' }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/reservation" element={<ReservationPage />} />
             <Route path="/confirmation" element={<ReservationPageConfirmation />} />
             <Route path="/takeaway" element={<TakeawayPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/reservations" element={<AdminReservations />} />
+            <Route path="/admin/takeaway-orders" element={<AdminTakeawayOrders />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
       </main>
       <Footer />

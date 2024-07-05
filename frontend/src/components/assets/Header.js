@@ -73,6 +73,7 @@ const BrandText = styled.span`
 `;
 
 const Header = () => {
+  const { isAuthenticated, logout } = useState();
   const [scrolled, setScrolled] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
@@ -101,7 +102,7 @@ const Header = () => {
     >
       <Container>
         <Navbar.Brand as={Link} to="/">
-        <Logo src={pizzaromaLogo} alt="Pizzaroma Logo" />
+          <Logo src={pizzaromaLogo} alt="Pizzaroma Logo" />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -115,18 +116,33 @@ const Header = () => {
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <NavLink as={Link} to="/reservation" onClick={() => setExpanded(false)}>Reservation</NavLink>
             </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <NavLink as={Link} to="/takeaway" onClick={() => setExpanded(false)}>Takeaway</NavLink>
+            </motion.div>
+            {isAuthenticated ? (
+              <>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <NavLink as={Link} to="/admin" onClick={() => setExpanded(false)}>Admin</NavLink>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button 
+                    variant="outline-light" 
+                    className="ms-lg-3 mt-2 mt-lg-0"
+                    onClick={() => {
+                      setExpanded(false);
+                      logout();
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </motion.div>
+              </>
+            ) : (
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <NavLink as={Link} to="/login" onClick={() => setExpanded(false)}>Login</NavLink>
+              </motion.div>
+            )}
           </Nav>
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            <Button 
-              variant="outline-light" 
-              as={Link} 
-              to="/takeaway" 
-              className="ms-lg-3 mt-2 mt-lg-0"
-              onClick={() => setExpanded(false)}
-            >
-              Order Takeaway
-            </Button>
-          </motion.div>
         </Navbar.Collapse>
       </Container>
     </StyledNavbar>

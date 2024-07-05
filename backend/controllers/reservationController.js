@@ -1,7 +1,7 @@
 const Reservation = require('../models/reservation');
+const Customer = require('../models/customer');
 const { sendConfirmationSms } = require('../handlers/twilioHandler');
-const crypto = require('crypto');
-const moment = require('moment'); // Import Moment.js
+const moment = require('moment');
 
 // Function to generate a random alphanumeric string
 const generateConfirmationNumber = () => {
@@ -14,34 +14,45 @@ const generateConfirmationNumber = () => {
   return result;
 };
 
+// Function to get or create a customer by phone number
+const getOrCreateCustomerByPhone = async (phone, name, lastName, email) => {
+  try {
+    let customer = await Customer.findOne({ where: { phone } });
+    if (!customer) {
+      customer = await Customer.create({ phone, name, lastName, email });
+    }
+    return customer;
+  } catch (error) {
+    throw new Error('Error fetching or creating customer');
+  }
+};
+
 // Create a new reservation
 exports.createReservation = async (req, res) => {
   const { name, lastName, email, phone, guests, reservationTime } = req.body;
 
-  // Validate incoming data (example: check if required fields are present)
   if (!name || !lastName || !email || !phone || !guests || !reservationTime) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // Convert reservationTime to UTC before saving
   const utcReservationTime = moment.utc(reservationTime).toISOString();
-
-  // Generate confirmation number
-  const confirmationNumber = generateConfirmationNumber(); // Generate a custom alphanumeric string
+  const confirmationNumber = generateConfirmationNumber();
 
   try {
+    const customer = await getOrCreateCustomerByPhone(phone, name, lastName, email);
+
     const newReservation = await Reservation.create({
+      customerId: customer.id, // Use customer ID
       name,
-      lastName, // Include lastName
+      lastName,
       email,
       phone,
       guests,
-      reservationTime: utcReservationTime, // Save in UTC format
-      confirmationNumber, // Include confirmation number in the create method
+      reservationTime: utcReservationTime,
+      confirmationNumber,
     });
 
-    // Send confirmation SMS
-    await sendConfirmationSms(phone, confirmationNumber, moment.utc(reservationTime).format('LLL')); // Format time in SMS
+    await sendConfirmationSms(phone, confirmationNumber, moment.utc(reservationTime).format('LLL'));
 
     res.status(201).json(newReservation);
   } catch (error) {
