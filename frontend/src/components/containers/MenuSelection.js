@@ -18,7 +18,7 @@ const StyledCard = styled(motion.div)`
 
 const MenuImage = styled.img`
   width: 100%;
-  height: 200px;
+  height: 120px;
   object-fit: cover;
   transition: transform 0.3s ease;
 

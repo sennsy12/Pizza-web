@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Container, Card, Row, Col, Button } from 'react-bootstrap';
+import { Container, Card, Row, Col} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import { FaCheckCircle, FaEnvelope, FaPhone, FaUser, FaUsers, FaClock } from 'react-icons/fa';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';

@@ -126,9 +126,7 @@ const TakeawayPage = () => {
               <ProgressBar now={(step / 3) * 100} className="mb-5" style={{ height: '8px' }} />
               <Row>
                 <Col xl={8} className="pe-lg-4 mb-4 mb-lg-0">
-                  <AnimatePresence initial={false} custom={step} exitBeforeEnter={false}>
                     {renderStep()}
-                  </AnimatePresence>
                 </Col>
                 <Col xl={4}>
                   <OrderSummary

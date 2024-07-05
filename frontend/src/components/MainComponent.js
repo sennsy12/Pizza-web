@@ -7,7 +7,6 @@ import ReservationPageConfirmation from './containers/reservationPageConfirmatio
 import TakeawayPage from './containers/takeawayPage';
 import Header from './assets/Header';
 import Footer from './assets/Footer';
-import { Container } from 'react-bootstrap';
 
 const MainComponent = () => {
   return (
