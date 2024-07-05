@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Carousel, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import createReservation from '../handlers/reservationHandler';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { motion } from 'framer-motion';
 import FeatureSection from './HomePageFeature';
 
@@ -26,9 +26,13 @@ const ReservationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Convert local time to UTC
+      const localTime = moment(formData.reservationTime);
+      const utcTime = localTime.utc().format();
+
       const data = await createReservation({
         ...formData,
-        reservationTime: moment.utc(formData.reservationTime).toISOString(),
+        reservationTime: utcTime,
       });
       navigate('/confirmation', { state: { reservation: data } });
     } catch (error) {

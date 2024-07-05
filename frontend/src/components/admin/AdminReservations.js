@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Spinner } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Dropdown } from 'react-bootstrap';
 import { fetchReservations } from '../handlers/adminHandler';
 
 const AdminReservations = () => {
@@ -55,6 +55,38 @@ const AdminReservations = () => {
     console.log('Edit reservation with id:', id);
   };
 
+  const handleStatusChange = (id, newStatus) => {
+    setReservations(reservations.map(reservation => 
+      reservation.id === id ? {...reservation, status: newStatus} : reservation
+    ));
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'Confirmed':
+        return <Badge bg="primary">Confirmed</Badge>;
+      case 'Seated':
+        return <Badge bg="info">Seated</Badge>;
+      case 'Done':
+        return <Badge bg="success">Done</Badge>;
+      case 'Canceled':
+        return <Badge bg="danger">Canceled</Badge>;
+      default:
+        return <Badge bg="secondary">Unknown</Badge>;
+    }
+  };
+
+  const getRowStyle = (status) => {
+    switch (status) {
+      case 'Done':
+        return { backgroundColor: '#d4edda' };
+      case 'Canceled':
+        return { backgroundColor: '#f8d7da' };
+      default:
+        return {};
+    }
+  };
+
   return (
     <Container fluid className="py-4">
       <Row className="mb-4">
@@ -99,18 +131,27 @@ const AdminReservations = () => {
           </thead>
           <tbody>
             {filteredReservations.map((reservation) => (
-              <tr key={reservation.id}>
+              <tr key={reservation.id} style={getRowStyle(reservation.status)}>
                 <td>{reservation.name}</td>
                 <td>{reservation.email}</td>
                 <td>{reservation.phone}</td>
                 <td>{reservation.guests}</td>
                 <td>{new Date(reservation.reservationTime).toLocaleString()}</td>
                 <td>
-                  <Badge bg={reservation.status === 'confirmed' ? 'success' : 'warning'}>
-                    {reservation.status}
-                  </Badge>
+                  {getStatusBadge(reservation.status)}
                 </td>
                 <td>
+                  <Dropdown className="d-inline mr-2">
+                    <Dropdown.Toggle variant="outline-secondary" size="sm" id={`dropdown-${reservation.id}`}>
+                      Change Status
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Confirmed')}>Confirmed</Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Seated')}>Seated</Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Done')}>Done</Dropdown.Item>
+                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Canceled')}>Canceled</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                   <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation.id)}>
                     Edit
                   </Button>

@@ -1,7 +1,7 @@
 const Reservation = require('../models/reservation');
 const Customer = require('../models/customer');
 const { sendConfirmationSms } = require('../handlers/twilioHandler');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 // Function to generate a random alphanumeric string
 const generateConfirmationNumber = () => {
@@ -35,24 +35,26 @@ exports.createReservation = async (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  const utcReservationTime = moment.utc(reservationTime).toISOString();
-  const confirmationNumber = generateConfirmationNumber();
-
   try {
     const customer = await getOrCreateCustomerByPhone(phone, name, lastName, email);
 
+    // Store the reservation time as UTC in the database
+    const utcReservationTime = moment.utc(reservationTime).toDate();
+
     const newReservation = await Reservation.create({
-      customerId: customer.id, // Use customer ID
+      customerId: customer.id,
       name,
       lastName,
       email,
       phone,
       guests,
       reservationTime: utcReservationTime,
-      confirmationNumber,
+      confirmationNumber: generateConfirmationNumber(),
     });
 
-    await sendConfirmationSms(phone, confirmationNumber, moment.utc(reservationTime).format('LLL'));
+    // Convert UTC time to Oslo time for SMS
+    const osloTime = moment(utcReservationTime).tz('Europe/Oslo').format('LLL');
+    await sendConfirmationSms(phone, newReservation.confirmationNumber, osloTime);
 
     res.status(201).json(newReservation);
   } catch (error) {

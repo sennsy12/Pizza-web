@@ -81,7 +81,10 @@ const TakeawayPage = () => {
     try {
       const pickupDateTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}`);
       if (isNaN(pickupDateTime.getTime())) throw new Error('Invalid pickup date/time');
-
+  
+      // Convert to UTC
+      const utcPickupTime = new Date(pickupDateTime.getTime() - pickupDateTime.getTimezoneOffset() * 60000);
+  
       const orderData = {
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
@@ -92,9 +95,9 @@ const TakeawayPage = () => {
           quantity: item.quantity,
         })),
         totalAmount: totalPrice,
-        pickupTime: pickupDateTime.toISOString(),
+        pickupTime: utcPickupTime.toISOString(),
       };
-
+  
       await createTakeawayOrder(orderData);
       alert('Order placed successfully!');
     } catch (error) {
@@ -102,6 +105,7 @@ const TakeawayPage = () => {
       alert('Failed to place order. Please try again.');
     }
   };
+  
 
   const renderStep = () => {
     switch (step) {

@@ -1,7 +1,7 @@
 const TakeawayOrder = require('../models/takeawayOrder');
 const { v4: uuidv4 } = require('uuid');
 const { sendTakeawaySMS } = require('../handlers/twilioHandler');
-const moment = require('moment');
+const moment = require('moment-timezone');
 // Function to generate a 6-digit alphanumeric string
 const generateOrderNumber = () => {
   const chars = '0123456789';
@@ -12,18 +12,16 @@ const generateOrderNumber = () => {
   return result;
 };
 
-// Create a new takeaway order
 exports.createTakeawayOrder = async (req, res) => {
   const { customerName, customerPhone, itemsOrdered, totalAmount, pickupTime } = req.body;
   
-  // Validate incoming data
   if (!customerName || !customerPhone || !itemsOrdered || !totalAmount || !pickupTime) {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
   try {
-    const utcPickupTime = moment.utc(pickupTime).toISOString();
-    const localPickupTime = moment.utc(pickupTime).local().format('LLL');
+    // Ensure the pickup time is in UTC
+    const utcPickupTime = moment.utc(pickupTime).toDate();
 
     const newOrder = await TakeawayOrder.create({
       order_number: generateOrderNumber(),
@@ -34,7 +32,9 @@ exports.createTakeawayOrder = async (req, res) => {
       pickup_time: utcPickupTime
     });
 
-    // Send takeaway SMS
+    // Convert UTC time to local time for SMS
+    const localPickupTime = moment(utcPickupTime).tz('Europe/Oslo').format('LLL');
+
     await sendTakeawaySMS(customerPhone, `Thank you ${customerName} your Order is confirmed! Total: $${totalAmount}. Pickup at: ${localPickupTime}`);
 
     res.status(201).json(newOrder);
