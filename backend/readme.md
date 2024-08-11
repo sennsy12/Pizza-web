@@ -1,6 +1,6 @@
 # 24.06.2024
 ## Mål for idag
-Starte opp folderre og filer samtlig koble til db
+Starte opp folderre og filer samtlig koble til db , lagt til start på twillio sms
 ### Hva som ble gjort
 Brukt rundt 1 time på å lage git rep, foldere og filer i prosjketet og databasen er tilkoblet sammen med tables
 

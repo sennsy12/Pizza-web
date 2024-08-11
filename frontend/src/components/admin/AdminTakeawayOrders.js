@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Modal } from 'react-bootstrap';
-import { fetchTakeawayOrders } from '../handlers/adminHandler';
+import { Table, Button, Container, Row, Col, Form, Spinner, Modal, Tab, Nav } from 'react-bootstrap';
+import { fetchTakeawayOrders, deleteTakeawayOrder } from '../handlers/adminHandler';
 
 const AdminTakeawayOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -10,6 +10,8 @@ const AdminTakeawayOrders = () => {
   const [sortDirection, setSortDirection] = useState('asc');
   const [showModal, setShowModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState(null);
 
   useEffect(() => {
     const loadOrders = async () => {
@@ -55,6 +57,55 @@ const AdminTakeawayOrders = () => {
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedOrder(null);
+  };
+
+  const handleDeleteOrder = async () => {
+    if (!orderToDelete) return;
+
+    try {
+      const success = await deleteTakeawayOrder(orderToDelete.order_number, orderToDelete.customer_phone);
+      if (success) {
+        setOrders(orders.filter(order => order.id !== orderToDelete.id));
+        handleCloseConfirmDelete();
+      } else {
+        console.error('Failed to delete order');
+      }
+    } catch (error) {
+      console.error('Error deleting takeaway order:', error);
+    }
+  };
+
+  const handleOpenConfirmDelete = (order) => {
+    setOrderToDelete(order);
+    setShowConfirmDelete(true);
+  };
+
+  const handleCloseConfirmDelete = () => {
+    setShowConfirmDelete(false);
+    setOrderToDelete(null);
+  };
+
+  // Mock activity log data
+  const activityLog = [
+    { timestamp: '2024-08-01 14:00:00', action: 'Order Created' },
+    { timestamp: '2024-08-01 14:10:00', action: 'Order Confirmed' },
+    { timestamp: '2024-08-01 14:30:00', action: 'Order Prepared' },
+    { timestamp: '2024-08-01 14:45:00', action: 'Order Ready for Pickup' },
+  ];
+
+  // Function to aggregate items by name and calculate the total quantity
+  const aggregateItems = (items) => {
+    const aggregated = {};
+
+    items.forEach(item => {
+      if (aggregated[item.name]) {
+        aggregated[item.name].quantity += item.quantity;
+      } else {
+        aggregated[item.name] = { ...item };
+      }
+    });
+
+    return Object.values(aggregated);
   };
 
   return (
@@ -104,6 +155,9 @@ const AdminTakeawayOrders = () => {
                   <Button variant="outline-primary" size="sm" onClick={() => handleViewDetails(order)}>
                     View Details
                   </Button>
+                  <Button variant="outline-danger" size="sm" className="ms-2" onClick={() => handleOpenConfirmDelete(order)}>
+                    Delete
+                  </Button>
                 </td>
               </tr>
             ))}
@@ -120,26 +174,73 @@ const AdminTakeawayOrders = () => {
         </Modal.Header>
         <Modal.Body>
           {selectedOrder && (
-            <>
-              <p><strong>Order Number:</strong> {selectedOrder.order_number}</p>
-              <p><strong>Customer:</strong> {selectedOrder.customer_name}</p>
-              <p><strong>Phone:</strong> {selectedOrder.customer_phone}</p>
-              <p><strong>Pickup Time:</strong> {new Date(selectedOrder.pickup_time).toLocaleString()}</p>
-              <p><strong>Total Amount:</strong> ${parseFloat(selectedOrder.total_amount).toFixed(2)}</p>
-              <h5>Ordered Items:</h5>
-              <ul>
-                {JSON.parse(selectedOrder.items_ordered).map((item, index) => (
-                  <li key={index}>
-                    {item.name} - Quantity: {item.quantity} - Price: ${parseFloat(item.price).toFixed(2)}
-                  </li>
-                ))}
-              </ul>
-            </>
+            <Tab.Container defaultActiveKey="details">
+              <Nav variant="tabs">
+                <Nav.Item>
+                  <Nav.Link eventKey="details">Order Details</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="items">Items Ordered</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="activity">Activity Log</Nav.Link>
+                </Nav.Item>
+              </Nav>
+              <Tab.Content className="mt-3">
+                <Tab.Pane eventKey="details">
+                  <p><strong>Order Number:</strong> {selectedOrder.order_number}</p>
+                  <p><strong>Customer:</strong> {selectedOrder.customer_name}</p>
+                  <p><strong>Phone:</strong> {selectedOrder.customer_phone}</p>
+                  <p><strong>Pickup Time:</strong> {new Date(selectedOrder.pickup_time).toLocaleString()}</p>
+                  <p><strong>Total Amount:</strong> ${parseFloat(selectedOrder.total_amount).toFixed(2)}</p>
+                </Tab.Pane>
+                <Tab.Pane eventKey="items">
+                  <h5>Ordered Items:</h5>
+                  <ul className="list-group">
+                    {aggregateItems(JSON.parse(selectedOrder.items_ordered)).map((item, index) => (
+                      <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+                      <span>{item.name}</span>
+                      <span className="badge bg-primary rounded-pill">Quantity: {item.quantity}</span>
+                      <span className="badge bg-secondary rounded-pill">Price: ${parseFloat(item.price).toFixed(2)}</span>
+                    </li>
+                    ))}
+                  </ul>
+                </Tab.Pane>
+                <Tab.Pane eventKey="activity">
+                  <h5>Activity Log:</h5>
+                  <ul>
+                    {activityLog.map((log, index) => (
+                      <li key={index}>
+                        <strong>{log.timestamp}:</strong> {log.action}
+                      </li>
+                    ))}
+                  </ul>
+                </Tab.Pane>
+              </Tab.Content>
+            </Tab.Container>
           )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
             Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Confirm Delete Modal */}
+      <Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this takeaway order?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseConfirmDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={handleDeleteOrder}>
+            Delete
           </Button>
         </Modal.Footer>
       </Modal>

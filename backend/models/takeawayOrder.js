@@ -47,6 +47,10 @@ const TakeawayOrder = sequelize.define('TakeawayOrder', {
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW
+  },
+  quantity: {
+    type: DataTypes.INTEGER,
+    defaultValue: 1 // You can set this to a different default if needed
   }
 }, {
   tableName: 'takeaway_orders',

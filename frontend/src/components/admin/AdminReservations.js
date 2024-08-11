@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Dropdown } from 'react-bootstrap';
-import { fetchReservations } from '../handlers/adminHandler';
+import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Dropdown, Modal } from 'react-bootstrap';
+import { fetchReservations, deleteReservation, updateReservation } from '../handlers/adminHandler';
 
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -8,6 +8,10 @@ const AdminReservations = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState('reservationTime');
   const [sortDirection, setSortDirection] = useState('asc');
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [editFormData, setEditFormData] = useState({ name: '', email: '', phone: '', guests: 1, reservationTime: '' });
 
   useEffect(() => {
     const loadReservations = async () => {
@@ -45,20 +49,72 @@ const AdminReservations = () => {
       reservation.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (id) => {
-    // Implement delete functionality
-    console.log('Delete reservation with id:', id);
+  const handleDelete = (reservation) => {
+    setSelectedReservation(reservation);
+    setShowConfirmModal(true);
+  };
+  
+
+  const confirmDelete = async () => {
+    if (selectedReservation) {
+      try {
+        const success = await deleteReservation(selectedReservation.phone);
+        if (success) {
+          setReservations(prevReservations => 
+            prevReservations.filter(res => res.phone !== selectedReservation.phone)
+          );
+        } else {
+          console.error('Failed to delete reservation');
+        }
+      } catch (error) {
+        console.error('Error deleting reservation:', error);
+      } finally {
+        setShowConfirmModal(false);
+        setSelectedReservation(null);
+      }
+    }
+  };
+  
+
+  const handleEdit = (reservation) => {
+    setEditFormData({
+      name: reservation.name,
+      email: reservation.email,
+      phone: reservation.phone,
+      guests: reservation.guests,
+      reservationTime: reservation.reservationTime
+    });
+    setSelectedReservation(reservation);
+    setShowEditModal(true);
   };
 
-  const handleEdit = (id) => {
-    // Implement edit functionality
-    console.log('Edit reservation with id:', id);
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prevState => ({ ...prevState, [name]: value }));
+  };
+
+  const handleEditSubmit = async () => {
+    if (selectedReservation) {
+      try {
+        const updatedReservation = await updateReservation(selectedReservation.id, editFormData);
+        setReservations(prevReservations => 
+          prevReservations.map(res => 
+            res.id === updatedReservation.id ? updatedReservation : res
+          )
+        );
+        setShowEditModal(false);
+      } catch (error) {
+        console.error('Error updating reservation:', error);
+      }
+    }
   };
 
   const handleStatusChange = (id, newStatus) => {
-    setReservations(reservations.map(reservation => 
-      reservation.id === id ? {...reservation, status: newStatus} : reservation
-    ));
+    setReservations(prevReservations =>
+      prevReservations.map(reservation =>
+        reservation.id === id ? { ...reservation, status: newStatus } : reservation
+      )
+    );
   };
 
   const getStatusBadge = (status) => {
@@ -114,6 +170,9 @@ const AdminReservations = () => {
         <Table responsive striped bordered hover>
           <thead>
             <tr>
+            <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                confirmationNumber {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
+              </th>
               <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
                 Name {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
               </th>
@@ -132,14 +191,13 @@ const AdminReservations = () => {
           <tbody>
             {filteredReservations.map((reservation) => (
               <tr key={reservation.id} style={getRowStyle(reservation.status)}>
+                <td>{reservation.confirmationNumber}</td>
                 <td>{reservation.name}</td>
                 <td>{reservation.email}</td>
                 <td>{reservation.phone}</td>
                 <td>{reservation.guests}</td>
                 <td>{new Date(reservation.reservationTime).toLocaleString()}</td>
-                <td>
-                  {getStatusBadge(reservation.status)}
-                </td>
+                <td>{getStatusBadge(reservation.status)}</td>
                 <td>
                   <Dropdown className="d-inline mr-2">
                     <Dropdown.Toggle variant="outline-secondary" size="sm" id={`dropdown-${reservation.id}`}>
@@ -152,10 +210,10 @@ const AdminReservations = () => {
                       <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Canceled')}>Canceled</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
-                  <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation.id)}>
+                  <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation)}>
                     Edit
                   </Button>
-                  <Button variant="outline-danger" size="sm" onClick={() => handleDelete(reservation.id)}>
+                  <Button variant="outline-danger" size="sm" onClick={() => handleDelete(reservation)}>
                     Delete
                   </Button>
                 </td>
@@ -167,6 +225,89 @@ const AdminReservations = () => {
       {!loading && filteredReservations.length === 0 && (
         <p className="text-center">No reservations found.</p>
       )}
+
+      {/* Confirmation Modal */}
+      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Deletion</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete the reservation for {selectedReservation?.name} with phone number {selectedReservation?.phone}?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Reservation</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={editFormData.name}
+                onChange={handleEditChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={editFormData.email}
+                onChange={handleEditChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Phone</Form.Label>
+              <Form.Control
+                type="text"
+                name="phone"
+                value={editFormData.phone}
+                onChange={handleEditChange}
+                readOnly
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Guests</Form.Label>
+              <Form.Control
+                type="number"
+                name="guests"
+                value={editFormData.guests}
+                onChange={handleEditChange}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Reservation Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                name="reservationTime"
+                value={editFormData.reservationTime ? new Date(editFormData.reservationTime).toISOString().slice(0, -1) : ''}
+                onChange={handleEditChange}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleEditSubmit}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

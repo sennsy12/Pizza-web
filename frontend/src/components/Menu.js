@@ -22,7 +22,7 @@ const menuItems = {
       name: 'Margherita',
       description: 'Tomato, mozzarella, and basil',
       img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
-      price: '12.99'
+      price: '12.99'  
     },
     {
       name: 'Pepperoni',
