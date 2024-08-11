@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Dropdown, Modal } from 'react-bootstrap';
 import { fetchReservations, deleteReservation, updateReservation } from '../handlers/adminHandler';
+import ReservationStatsCards from '../admin/ReservationStatsCards';
 
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -150,6 +151,7 @@ const AdminReservations = () => {
           <h1 className="text-primary">All Reservations</h1>
         </Col>
       </Row>
+      <ReservationStatsCards />
       <Row className="mb-3">
         <Col md={6}>
           <Form.Control

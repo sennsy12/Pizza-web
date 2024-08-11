@@ -27,11 +27,8 @@ app.post('/api/login', authenticateUser, (req, res) => {
 // Routes
 const takeawayRoutes = require('./routes/takeawayRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
-
-// Routes
 const adminRoutes = require('./routes/adminRoutes');
-app.use('/api/admin', adminRoutes);
-
+// Routes
 app.use('/api/takeaway', takeawayRoutes);
 app.use('/api/reservation', reservationRoutes);
 app.use('/api/admin', adminRoutes);

@@ -2,6 +2,7 @@ const Reservation = require('../models/reservation');
 const Customer = require('../models/customer');
 const { sendConfirmationSms } = require('../handlers/twilioHandler');
 const moment = require('moment-timezone');
+const sequelize = require('../db');
 
 // Function to generate a random alphanumeric string
 const generateConfirmationNumber = () => {
@@ -63,3 +64,25 @@ exports.createReservation = async (req, res) => {
   }
 };
 
+exports.getReservationStats = async (req, res) => {
+  try {
+    const [results, metadata] = await sequelize.query(`
+      SELECT 
+        SUM(guests) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS "guests_today",
+        SUM(guests) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE)) AS "guests_this_week",
+        SUM(guests) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE)) AS "guests_this_month",
+        SUM(guests) AS "total_guests",
+        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS "reservations_today",
+        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE)) AS "reservations_this_week",
+        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE)) AS "reservations_this_month",
+        COUNT(DISTINCT id) AS "total_reservations",
+        COALESCE(AVG(guests), 0) AS "average_guests_per_reservation"
+      FROM reservations;
+    `);
+
+    res.json(results[0]);
+  } catch (error) {
+    console.error('Failed to fetch reservation stats:', error);
+    res.status(500).json({ error: 'Failed to fetch reservation stats', details: error.message });
+  }
+};
