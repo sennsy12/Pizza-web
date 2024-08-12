@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Row, Col, Card, Button, Badge, Accordion } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
-import { PlusSquare, DashSquare, Cart } from 'react-bootstrap-icons';
+import { Cart } from 'react-bootstrap-icons';
 
 const StyledCard = styled(motion.div)`
   margin-bottom: 20px;
@@ -27,22 +27,6 @@ const MenuImage = styled.img`
   }
 `;
 
-const QuantityControl = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 15px;
-`;
-
-const QuantityButton = styled(Button)`
-  width: 32px;
-  height: 32px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1rem;
-  padding: 0;
-`;
-
 const PriceTag = styled(Badge)`
   position: absolute;
   top: 10px;
@@ -52,24 +36,9 @@ const PriceTag = styled(Badge)`
 `;
 
 const MenuSelection = ({ menu, addToCart }) => {
-  const [quantities, setQuantities] = useState({});
-
-  const incrementQuantity = (itemId) => {
-    setQuantities({ ...quantities, [itemId]: (quantities[itemId] || 0) + 1 });
-  };
-
-  const decrementQuantity = (itemId) => {
-    if (quantities[itemId] > 0) {
-      setQuantities({ ...quantities, [itemId]: quantities[itemId] - 1 });
-    }
-  };
 
   const handleAddToCart = (item) => {
-    const quantity = quantities[item.id] || 0;
-    if (quantity > 0) {
-      addToCart({ ...item, quantity });
-      setQuantities({ ...quantities, [item.id]: 0 });
-    }
+    addToCart({ ...item, quantity: 1 });  // Always add 1 pizza to the cart
   };
 
   // Categorize menu items
@@ -104,20 +73,14 @@ const MenuSelection = ({ menu, addToCart }) => {
                         <Card.Body>
                           <Card.Title>{item.name}</Card.Title>
                           <Card.Text className="text-muted">{item.description}</Card.Text>
-                          <QuantityControl>
-                            <QuantityButton variant="outline-primary" onClick={() => decrementQuantity(item.id)}><DashSquare /></QuantityButton>
-                            <span className="mx-3 fw-bold">{quantities[item.id] || 0}</span>
-                            <QuantityButton variant="outline-primary" onClick={() => incrementQuantity(item.id)}><PlusSquare /></QuantityButton>
-                            <Button 
-                              variant="primary" 
-                              onClick={() => handleAddToCart(item)} 
-                              className="ms-auto"
-                              disabled={!quantities[item.id]}
-                            >
-                              <Cart className="me-1" />
-                              Add to Cart
-                            </Button>
-                          </QuantityControl>
+                          <Button 
+                            variant="primary" 
+                            onClick={() => handleAddToCart(item)} 
+                            className="w-100"
+                          >
+                            <Cart className="me-1" />
+                            Add to Cart
+                          </Button>
                         </Card.Body>
                       </Card>
                     </StyledCard>

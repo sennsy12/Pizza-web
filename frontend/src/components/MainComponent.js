@@ -5,6 +5,7 @@ import Menu from './Menu';
 import ReservationPage from './containers/reservationPage';
 import ReservationPageConfirmation from './containers/reservationPageConfirmation';
 import TakeawayPage from './containers/takeawayPage';
+import TakeawayPageConfirmation from './containers/takeawaypageConfirmation';
 import Header from './assets/Header';
 import Footer from './assets/Footer';
 import AdminDashboard from './admin/AdminDashboard';
@@ -23,6 +24,7 @@ const MainComponent = () => {
             <Route path="/reservation" element={<ReservationPage />} />
             <Route path="/confirmation" element={<ReservationPageConfirmation />} />
             <Route path="/takeaway" element={<TakeawayPage />} />
+            <Route path="/takeawaypageConfirmation" element={<TakeawayPageConfirmation />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/reservations" element={<AdminReservations />} />
             <Route path="/admin/takeaway-orders" element={<AdminTakeawayOrders />} />

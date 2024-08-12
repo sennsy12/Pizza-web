@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap';
-import { AnimatePresence } from 'framer-motion';
 import { createTakeawayOrder } from '../handlers/takeawayHandler';
 import MenuSelection from './MenuSelection';
 import CustomerInfo from './CustomerInfo';
@@ -8,6 +8,7 @@ import Payment from './Payment';
 import OrderSummary from './OrderSummary';
 
 const TakeawayPage = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [cart, setCart] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({
@@ -98,7 +99,10 @@ const TakeawayPage = () => {
       };
   
       await createTakeawayOrder(orderData);
-      alert('Order placed successfully!');
+      
+      // Redirect to the confirmation page with orderData as state
+      navigate('/takeawaypageConfirmation', { state: { orderData } });
+  
     } catch (error) {
       console.error('Error placing order:', error);
       alert('Failed to place order. Please try again.');

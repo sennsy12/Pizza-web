@@ -21,7 +21,7 @@ exports.createTakeawayOrder = async (req, res) => {
 
   try {
     // Ensure the pickup time is in UTC
-    const utcPickupTime = moment.utc(pickupTime).toDate();
+    const utcPickupTime = moment.tz(pickupTime, 'Europe/Oslo').utc().toDate();
 
     const newOrder = await TakeawayOrder.create({
       order_number: generateOrderNumber(),
@@ -37,7 +37,14 @@ exports.createTakeawayOrder = async (req, res) => {
 
     await sendTakeawaySMS(customerPhone, `Thank you ${customerName} your Order is confirmed! Total: $${totalAmount}. Pickup at: ${localPickupTime}`);
 
-    res.status(201).json(newOrder);
+    // Convert created_at to local time for response
+    const localCreatedAt = moment(newOrder.created_at).tz('Europe/Oslo').format('YYYY-MM-DD HH:mm:ss');
+
+    // Respond with the order details, including the local created_at
+    res.status(201).json({
+      ...newOrder.toJSON(),
+      created_at: localCreatedAt
+    });
   } catch (error) {
     console.error('Error creating takeaway order:', error);
     res.status(500).json({ message: 'Internal server error' });

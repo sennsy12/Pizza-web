@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Spinner, Modal, Tab, Nav } from 'react-bootstrap';
 import { fetchTakeawayOrders, deleteTakeawayOrder } from '../handlers/adminHandler';
+import moment from 'moment-timezone';
 
 const AdminTakeawayOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -135,6 +136,7 @@ const AdminTakeawayOrders = () => {
         <Table responsive striped bordered hover>
           <thead>
             <tr>
+            <th onClick={() => handleSort('order_number')}>Order time</th>
               <th onClick={() => handleSort('order_number')}>Order Number</th>
               <th onClick={() => handleSort('customer_name')}>Customer Name</th>
               <th>Phone</th>
@@ -146,6 +148,7 @@ const AdminTakeawayOrders = () => {
           <tbody>
             {filteredOrders.map((order) => (
               <tr key={order.id}>
+                <td>{moment(order.created_at).tz('Europe/Oslo').format('YYYY-MM-DD HH:mm:ss')}</td>
                 <td>{order.order_number}</td>
                 <td>{order.customer_name}</td>
                 <td>{order.customer_phone}</td>
