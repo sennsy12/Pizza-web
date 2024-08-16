@@ -35,7 +35,7 @@ const TakeawaypageConfirmation = () => {
               <h4>Total: ${orderData?.totalAmount.toFixed(2)}</h4>
               <Button variant="primary" className="mt-4" onClick={handleGoHome}>
                 Go Home
-              </Button>
+              </Button>        
             </Card.Body>
           </Card>
         </Col>

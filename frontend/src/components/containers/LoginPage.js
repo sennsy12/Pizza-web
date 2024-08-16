@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
-import { FaGoogle, FaUserSecret } from 'react-icons/fa';
 import styled from 'styled-components';
 import { loginUser} from '../handlers/authHandler';
 
@@ -83,19 +82,6 @@ const LoginPage = () => {
                   Login
                 </StyledButton>
               </Form>
-
-              <div className="text-center mb-3">
-                <small>Or login with</small>
-              </div>
-
-              <StyledButton variant="danger" >
-                <FaGoogle className="me-2" /> Login with Google
-              </StyledButton>
-
-              <StyledButton variant="secondary" >
-                <FaUserSecret className="me-2" /> Login as Guest
-              </StyledButton>
-
               <div className="text-center mt-3">
                 <a href="/forgot-password">Forgot password?</a>
               </div>

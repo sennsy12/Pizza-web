@@ -1,4 +1,3 @@
-// src/components/HomePage.js
 import React from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
@@ -13,12 +12,18 @@ const HomePage = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <div className="hero-section position-relative" style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '90vh'
-        }}>
+        <div 
+          className="hero-section position-relative" 
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')",
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            height: '90vh',
+            borderRadius: '20px', // Rounded corners
+            overflow: 'hidden',    // Ensures the rounded corners apply to the image
+            backgroundColor: '#f8f9fa' // Light gray background color
+          }}
+        >
           <Container className="h-100 d-flex align-items-center">
             <Row className="w-100">
               <Col md={8} className="text-white">

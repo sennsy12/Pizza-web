@@ -1,4 +1,3 @@
-// src/containers/HomePageFeature.js
 import React from 'react';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
@@ -6,24 +5,36 @@ import { FaPizzaSlice, FaLeaf, FaWineGlassAlt } from 'react-icons/fa';
 import styled from 'styled-components';
 
 const StyledCard = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 107, 107, 0.15); /* #ff6b6b with slight transparency */
+  backdrop-filter: blur(12px);
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 215, 255, 0.2);
   transition: all 0.3s ease;
 
   &:hover {
     transform: translateY(-10px);
-    box-shadow: 0 15px 30px 0 rgba(31, 38, 135, 0.5);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
   }
 `;
 
 const IconWrapper = styled.div`
   font-size: 3rem;
-  color: #ff6b6b;
+  color: #fff; /* White color for the icons */
   margin-bottom: 1rem;
+`;
+
+const FeatureTitle = styled(Card.Title)`
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #fff; /* White color for the title */
+`;
+
+const FeatureText = styled(Card.Text)`
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.85); /* Slightly lighter white for the text */
 `;
 
 const FeatureSection = () => {
@@ -46,8 +57,8 @@ const FeatureSection = () => {
   ];
 
   return (
-    <Container fluid className="py-5" style={{ background: 'linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%)' }}>
-      <Container className="py-5"> {/* Added padding here */}
+    <Container fluid className="py-5" style={{ borderRadius: '20px', background: 'rgba(255, 107, 107, 0.85)' }}>
+      <Container className="py-5">
         <motion.h2 
           className="text-center mb-5 text-white"
           initial={{ opacity: 0, y: -50 }}
@@ -68,8 +79,8 @@ const FeatureSection = () => {
               >
                 <Card.Body className="text-center p-4">
                   <IconWrapper>{feature.icon}</IconWrapper>
-                  <Card.Title className="mb-3 text-white">{feature.title}</Card.Title>
-                  <Card.Text className="text-white-50">{feature.description}</Card.Text>
+                  <FeatureTitle>{feature.title}</FeatureTitle>
+                  <FeatureText>{feature.description}</FeatureText>
                 </Card.Body>
               </StyledCard>
             </Col>
