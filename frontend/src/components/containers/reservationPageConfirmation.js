@@ -47,7 +47,7 @@ const ReservationPageConfirmation = () => {
           </Row>
           <Row className="justify-content-center mt-4">
             <Col md={8}>
-              <LoadScript googleMapsApiKey="AIzaSyCBqvsnmrqt1iXGxkeh6mfPdRxNrEWDERw">
+            <LoadScript googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
                 <GoogleMap
                   mapContainerStyle={containerStyle}
                   center={center}
