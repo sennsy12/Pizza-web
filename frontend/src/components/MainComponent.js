@@ -19,6 +19,7 @@ const MainComponent = () => {
       <Header />
       <main className="flex-grow-1" style={{ paddingTop: '60px' }}>
           <Routes>
+          <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/reservation" element={<ReservationPage />} />
