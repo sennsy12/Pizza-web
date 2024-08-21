@@ -17,9 +17,9 @@ const MainComponent = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
-      <main className="flex-grow-1" style={{ paddingTop: '70px' }}>
+      <main className="flex-grow-1" style={{ paddingTop: '60px' }}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/reservation" element={<ReservationPage />} />
             <Route path="/confirmation" element={<ReservationPageConfirmation />} />

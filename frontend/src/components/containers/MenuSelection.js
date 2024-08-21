@@ -1,42 +1,9 @@
 import React from 'react';
 import { Row, Col, Card, Button, Badge, Accordion } from 'react-bootstrap';
 import { motion } from 'framer-motion';
-import styled from 'styled-components';
 import { Cart } from 'react-bootstrap-icons';
 
-const StyledCard = styled(motion.div)`
-  margin-bottom: 20px;
-  border-radius: 15px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  }
-`;
-
-const MenuImage = styled.img`
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-
-  ${StyledCard}:hover & {
-    transform: scale(1.05);
-  }
-`;
-
-const PriceTag = styled(Badge)`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 1rem;
-  padding: 8px 12px;
-`;
-
 const MenuSelection = ({ menu, addToCart }) => {
-
   const handleAddToCart = (item) => {
     addToCart({ ...item, quantity: 1 });  // Always add 1 pizza to the cart
   };
@@ -64,11 +31,31 @@ const MenuSelection = ({ menu, addToCart }) => {
               <Row>
                 {categorizedMenu[category].map((item) => (
                   <Col md={6} key={item.id}>
-                    <StyledCard>
-                      <Card>
-                        <div style={{ position: 'relative' }}>
-                          <MenuImage src={item.image} alt={item.name} />
-                          <PriceTag bg="primary">${item.price.toFixed(2)}</PriceTag>
+                    <motion.div 
+                      className="mb-4"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <Card className="h-100 shadow">
+                        <div style={{ position: 'relative', overflow: 'hidden' }}>
+                          <Card.Img 
+                            variant="top" 
+                            src={item.image} 
+                            alt={item.name} 
+                            style={{ height: '120px', objectFit: 'cover' }}
+                          />
+                          <Badge 
+                            bg="primary" 
+                            style={{
+                              position: 'absolute',
+                              top: '10px',
+                              right: '10px',
+                              fontSize: '1rem',
+                              padding: '8px 12px'
+                            }}
+                          >
+                            ${item.price.toFixed(2)}
+                          </Badge>
                         </div>
                         <Card.Body>
                           <Card.Title>{item.name}</Card.Title>
@@ -83,7 +70,7 @@ const MenuSelection = ({ menu, addToCart }) => {
                           </Button>
                         </Card.Body>
                       </Card>
-                    </StyledCard>
+                    </motion.div>
                   </Col>
                 ))}
               </Row>

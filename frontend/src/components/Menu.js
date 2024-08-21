@@ -1,50 +1,9 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Nav, Card, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Nav, Card, Badge, Navbar } from 'react-bootstrap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPizzaSlice, FaGlassWhiskey, FaHamburger } from 'react-icons/fa';
-import styled from 'styled-components';
 
-// Styled components for custom design
-const Sidebar = styled.div`
-  background-color: #2c3e50;
-  color: white;
-  height: 100vh;
-  position: fixed;
-  width: 250px;
-  padding: 2rem;
-  transition: all 0.3s ease;
-  border-radius: 5px;
-`;
 
-const MainContent = styled.div`
-  margin-left: 250px;
-  padding: 2rem;
-  background-color: #ecf0f1;
-  min-height: 100vh;
-`;
-
-const CategoryButton = styled(Nav.Link)`
-  color: white;
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-
-  &:hover, &.active {
-    background-color: #34495e;
-    color: #3498db;
-  }
-`;
-
-const MenuCard = styled(Card)`
-  transition: all 0.3s ease;
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  }
-`;
-
-// Sample menu items (keep the same as before)
 const menuItems = {
   pizzas: [
     { name: 'Margherita', description: 'Tomato, mozzarella, and basil', img: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80', price: '12.99' },
@@ -61,14 +20,14 @@ const menuItems = {
 };
 
 const MenuItem = ({ item }) => (
-  <MenuCard className="h-100 border-0 shadow-sm">
-    <Card.Img variant="top" src={item.img} alt={item.name} style={{ height: '200px', objectFit: 'cover' }} />
+  <Card className="h-100 border-0 shadow-sm rounded">
+    <Card.Img variant="top" src={item.img} alt={item.name} className="rounded-top" style={{ height: '200px', objectFit: 'cover' }} />
     <Card.Body>
       <Card.Title>{item.name}</Card.Title>
       <Card.Text>{item.description}</Card.Text>
       <Badge bg="primary">${item.price}</Badge>
     </Card.Body>
-  </MenuCard>
+  </Card>
 );
 
 const Menu = () => {
@@ -87,44 +46,47 @@ const Menu = () => {
   };
 
   return (
-    <Container fluid className="p-0">
-      <Row noGutters>
-        <Sidebar>
-          <h2 className="text-center mb-4">Our Menu</h2>
-          <Nav className="flex-column">
-            {Object.keys(menuItems).map((category) => (
-              <CategoryButton
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={activeCategory === category ? 'active' : ''}
-              >
-                {icons[category]} {category.charAt(0).toUpperCase() + category.slice(1)}
-              </CategoryButton>
-            ))}
-          </Nav>
-        </Sidebar>
+    <Container fluid className="px-0">
+      <Navbar bg="light" expand="lg" className="mb-4">
+        <Container>
+          <Navbar.Brand>Our Menu</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              {Object.keys(menuItems).map((category) => (
+                <Nav.Link
+                  key={category}
+                  onClick={() => setActiveCategory(category)}
+                  className={`${activeCategory === category ? 'active' : ''}`}
+                >
+                  {icons[category]} {category.charAt(0).toUpperCase() + category.slice(1)}
+                </Nav.Link>
+              ))}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-        <MainContent>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeCategory}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className="mb-4">{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h2>
-              <Row xs={1} md={2} lg={3} className="g-4">
-                {filteredItems.map((item, index) => (
-                  <Col key={index}>
-                    <MenuItem item={item} />
-                  </Col>
-                ))}
-              </Row>
-            </motion.div>
-          </AnimatePresence>
-        </MainContent>
-      </Row>
+      <Container>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h2 className="mb-4">{activeCategory.charAt(0).toUpperCase() + activeCategory.slice(1)}</h2>
+            <Row xs={1} md={2} lg={3} className="g-4">
+              {filteredItems.map((item, index) => (
+                <Col key={index}>
+                  <MenuItem item={item} />
+                </Col>
+              ))}
+            </Row>
+          </motion.div>
+        </AnimatePresence>
+      </Container>
     </Container>
   );
 };
