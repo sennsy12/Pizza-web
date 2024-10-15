@@ -84,6 +84,8 @@ const LoginPage = () => {
               </Form>
               <div className="text-center mt-3">
                 <a href="/forgot-password">Forgot password?</a>
+                <br />
+                <a href="/register">Don't have an account? Register</a>
               </div>
             </Card.Body>
           </StyledCard>

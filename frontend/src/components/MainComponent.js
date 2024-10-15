@@ -11,26 +11,28 @@ import Footer from './assets/Footer';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminReservations from './admin/AdminReservations';
 import AdminTakeawayOrders from './admin/AdminTakeawayOrders';
-import LoginPage from './containers/LoginPage'; // Create this for authentication
+import LoginPage from './containers/LoginPage';
+import RegisterPage from './containers/RegisterPage'; // New registration page
 
 const MainComponent = () => {
   return (
     <div className="d-flex flex-column min-vh-100">
       <Header />
       <main className="flex-grow-1" style={{ paddingTop: '60px' }}>
-          <Routes>
+        <Routes>
           <Route path="/" element={<HomePage />} />
-            <Route path="/home" element={<HomePage />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/reservation" element={<ReservationPage />} />
-            <Route path="/confirmation" element={<ReservationPageConfirmation />} />
-            <Route path="/takeaway" element={<TakeawayPage />} />
-            <Route path="/takeawaypageConfirmation" element={<TakeawayPageConfirmation />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/reservations" element={<AdminReservations />} />
-            <Route path="/admin/takeaway-orders" element={<AdminTakeawayOrders />} />
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/reservation" element={<ReservationPage />} />
+          <Route path="/confirmation" element={<ReservationPageConfirmation />} />
+          <Route path="/takeaway" element={<TakeawayPage />} />
+          <Route path="/takeawaypageConfirmation" element={<TakeawayPageConfirmation />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/reservations" element={<AdminReservations />} />
+          <Route path="/admin/takeaway-orders" element={<AdminTakeawayOrders />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} /> {/* New route */}
+        </Routes>
       </main>
       <Footer />
     </div>
