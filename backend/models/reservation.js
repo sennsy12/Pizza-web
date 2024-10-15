@@ -1,3 +1,5 @@
+// reservation.js
+
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
 const Customer = require('./customer');

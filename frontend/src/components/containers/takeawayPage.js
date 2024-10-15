@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap';
@@ -7,9 +8,13 @@ import CustomerInfo from './CustomerInfo';
 import Payment from './Payment';
 import OrderSummary from './OrderSummary';
 
+const STEP_MENU_SELECTION = 1;
+const STEP_CUSTOMER_INFO = 2;
+const STEP_PAYMENT = 3;
+
 const TakeawayPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(STEP_MENU_SELECTION);
   const [cart, setCart] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -38,85 +43,78 @@ const TakeawayPage = () => {
   ];
 
   const addToCart = (item) => {
-    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
-    if (existingItem) {
-      const updatedCart = cart.map((cartItem) =>
-        cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
-      );
-      setCart(updatedCart);
-    } else {
-      setCart([...cart, { ...item, quantity: 1 }]);
-    }
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
+        );
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
   };
 
   const removeFromCart = (index) => {
+    if (index < 0 || index >= cart.length) return;
+
     const itemToRemove = cart[index];
-    if (itemToRemove.quantity > 0) {
-      if (window.confirm(`Are you sure you want to remove ${itemToRemove.name} from your cart?`)) {
-        const newCart = [...cart];
-        newCart.splice(index, 1);
-        setCart(newCart);
-      }
+    if (window.confirm(`Are you sure you want to remove ${itemToRemove.name} from your cart?`)) {
+      setCart((prevCart) => prevCart.filter((_, i) => i !== index));
     }
   };
 
   const handleQuantityChange = (index, newQuantity) => {
     if (newQuantity >= 0) {
-      const updatedCart = [...cart];
-      updatedCart[index] = { ...updatedCart[index], quantity: newQuantity };
-      setCart(updatedCart);
+      setCart((prevCart) =>
+        prevCart.map((item, i) =>
+          i === index ? { ...item, quantity: newQuantity } : item
+        )
+      );
     }
   };
 
   const handleInfoChange = (e) => {
-    setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setCustomerInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
   };
 
-  const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const nextStep = () => setStep(step + 1);
-  const prevStep = () => setStep(step - 1);
+  const nextStep = () => setStep((prevStep) => Math.min(prevStep + 1, STEP_PAYMENT));
+  const prevStep = () => setStep((prevStep) => Math.max(prevStep - 1, STEP_MENU_SELECTION));
 
   const handleSubmit = async () => {
     try {
       const pickupDateTime = new Date(`${customerInfo.pickupDate}T${customerInfo.pickupTime}`);
       if (isNaN(pickupDateTime.getTime())) throw new Error('Invalid pickup date/time');
-  
+
       // Convert to UTC
       const utcPickupTime = new Date(pickupDateTime.getTime() - pickupDateTime.getTimezoneOffset() * 60000);
-  
+
       const orderData = {
         customerName: customerInfo.name,
         customerPhone: customerInfo.phone,
-        itemsOrdered: cart.map((item) => ({
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-        })),
+        itemsOrdered: cart.map(({ id, name, price, quantity }) => ({ id, name, price, quantity })),
         totalAmount: totalPrice,
         pickupTime: utcPickupTime.toISOString(),
       };
-  
+
       await createTakeawayOrder(orderData);
-      
-      // Redirect to the confirmation page with orderData as state
       navigate('/takeawaypageConfirmation', { state: { orderData } });
-  
     } catch (error) {
       console.error('Error placing order:', error);
       alert('Failed to place order. Please try again.');
     }
   };
-  
 
   const renderStep = () => {
     switch (step) {
-      case 1:
+      case STEP_MENU_SELECTION:
         return <MenuSelection key="menu-selection" menu={menu} addToCart={addToCart} />;
-      case 2:
+      case STEP_CUSTOMER_INFO:
         return <CustomerInfo key="customer-info" customerInfo={customerInfo} handleInfoChange={handleInfoChange} />;
-      case 3:
+      case STEP_PAYMENT:
         return <Payment key="payment" totalPrice={totalPrice} />;
       default:
         return null;
@@ -124,16 +122,16 @@ const TakeawayPage = () => {
   };
 
   return (
-    <Container  className="py-5">
+    <Container className="py-5">
       <Row className="justify-content-center">
-        <Col xl={12} >
+        <Col xl={12}>
           <Card className="shadow-lg border-0 rounded-lg overflow-hidden">
             <Card.Body className="p-5">
               <h2 className="text-center mb-4">Order Your Meal</h2>
-              <ProgressBar now={(step / 3) * 100} className="mb-5" style={{ height: '8px' }} />
+              <ProgressBar now={(step / STEP_PAYMENT) * 100} className="mb-5" style={{ height: '8px' }} />
               <Row>
                 <Col xl={8} className="pe-lg-4 mb-4 mb-lg-0">
-                    {renderStep()}
+                  {renderStep()}
                 </Col>
                 <Col xl={4}>
                   <OrderSummary
@@ -145,12 +143,12 @@ const TakeawayPage = () => {
                 </Col>
               </Row>
               <div className="d-flex justify-content-between mt-5">
-                {step > 1 && (
+                {step > STEP_MENU_SELECTION && (
                   <Button variant="outline-primary" onClick={prevStep} className="px-4 py-2">
                     <i className="fas fa-chevron-left me-2"></i>Back
                   </Button>
                 )}
-                {step < 3 ? (
+                {step < STEP_PAYMENT ? (
                   <Button
                     variant="primary"
                     onClick={nextStep}

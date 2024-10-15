@@ -15,7 +15,6 @@ const DEMO_USER = {
     }
   };
   
-
   
   module.exports = {
     authenticateUser,

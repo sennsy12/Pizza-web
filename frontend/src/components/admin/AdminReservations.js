@@ -1,7 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Spinner, Dropdown, Modal } from 'react-bootstrap';
+import React, { useEffect, useState, forwardRef } from 'react';
+import { Table, Button, Container, Row, Col, Form, Spinner, Modal, Card } from 'react-bootstrap';
 import { fetchReservations, deleteReservation, updateReservation } from '../handlers/adminHandler';
 import ReservationStatsCards from '../admin/ReservationStatsCards';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import moment from 'moment-timezone';
+import { registerLocale, setDefaultLocale } from "react-datepicker";
+import nb from 'date-fns/locale/nb';
+
+registerLocale('nb', nb);
+setDefaultLocale('nb');
+
+const CustomInput = forwardRef(({ value, onClick }, ref) => (
+  <Form.Control onClick={onClick} ref={ref} value={value} readOnly />
+));
 
 const AdminReservations = () => {
   const [reservations, setReservations] = useState([]);
@@ -13,21 +25,28 @@ const AdminReservations = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [editFormData, setEditFormData] = useState({ name: '', email: '', phone: '', guests: 1, reservationTime: '' });
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
   useEffect(() => {
-    const loadReservations = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchReservations();
-        setReservations(data);
-      } catch (error) {
-        console.error('Failed to fetch reservations:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
     loadReservations();
-  }, []);
+  }, [startDate, endDate]);
+
+  const loadReservations = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchReservations();
+      const filteredData = data.filter(reservation => {
+        const reservationDate = new Date(reservation.reservationTime);
+        return reservationDate >= startDate && reservationDate <= endDate;
+      });
+      setReservations(filteredData);
+    } catch (error) {
+      console.error('Failed to fetch reservations:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -54,7 +73,6 @@ const AdminReservations = () => {
     setSelectedReservation(reservation);
     setShowConfirmModal(true);
   };
-  
 
   const confirmDelete = async () => {
     if (selectedReservation) {
@@ -75,7 +93,14 @@ const AdminReservations = () => {
       }
     }
   };
-  
+
+  const formatReservationTime = (time) => {
+    return moment(time).tz('Europe/Oslo').format('DD.MM.YYYY HH:mm');
+  };
+
+  const parseReservationTime = (time) => {
+    return moment.tz(time, 'Europe/Oslo').toDate();
+  };
 
   const handleEdit = (reservation) => {
     setEditFormData({
@@ -83,7 +108,7 @@ const AdminReservations = () => {
       email: reservation.email,
       phone: reservation.phone,
       guests: reservation.guests,
-      reservationTime: reservation.reservationTime
+      reservationTime: parseReservationTime(reservation.reservationTime)
     });
     setSelectedReservation(reservation);
     setShowEditModal(true);
@@ -94,10 +119,18 @@ const AdminReservations = () => {
     setEditFormData(prevState => ({ ...prevState, [name]: value }));
   };
 
+  const handleEditDateChange = (date) => {
+    setEditFormData(prevState => ({ ...prevState, reservationTime: date }));
+  };
+
   const handleEditSubmit = async () => {
     if (selectedReservation) {
       try {
-        const updatedReservation = await updateReservation(selectedReservation.id, editFormData);
+        const updatedReservationData = {
+          ...editFormData,
+          reservationTime: moment(editFormData.reservationTime).tz('Europe/Oslo').format()
+        };
+        const updatedReservation = await updateReservation(selectedReservation.id, updatedReservationData);
         setReservations(prevReservations => 
           prevReservations.map(res => 
             res.id === updatedReservation.id ? updatedReservation : res
@@ -110,40 +143,6 @@ const AdminReservations = () => {
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setReservations(prevReservations =>
-      prevReservations.map(reservation =>
-        reservation.id === id ? { ...reservation, status: newStatus } : reservation
-      )
-    );
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Confirmed':
-        return <Badge bg="primary">Confirmed</Badge>;
-      case 'Seated':
-        return <Badge bg="info">Seated</Badge>;
-      case 'Done':
-        return <Badge bg="success">Done</Badge>;
-      case 'Canceled':
-        return <Badge bg="danger">Canceled</Badge>;
-      default:
-        return <Badge bg="secondary">Unknown</Badge>;
-    }
-  };
-
-  const getRowStyle = (status) => {
-    switch (status) {
-      case 'Done':
-        return { backgroundColor: '#d4edda' };
-      case 'Canceled':
-        return { backgroundColor: '#f8d7da' };
-      default:
-        return {};
-    }
-  };
-
   return (
     <Container fluid className="py-4">
       <Row className="mb-4">
@@ -152,16 +151,54 @@ const AdminReservations = () => {
         </Col>
       </Row>
       <ReservationStatsCards />
-      <Row className="mb-3">
-        <Col md={6}>
-          <Form.Control
-            type="text"
-            placeholder="Search by name or email"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Col>
-      </Row>
+      <Card className="mb-4">
+        <Card.Body>
+          <Row className="align-items-end">
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>Start Date</Form.Label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  selectsStart
+                  startDate={startDate}
+                  endDate={endDate}
+                  dateFormat="dd.MM.yyyy"
+                  className="form-control"
+                  locale="nb"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={3}>
+              <Form.Group>
+                <Form.Label>End Date</Form.Label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  selectsEnd
+                  startDate={startDate}
+                  endDate={endDate}
+                  minDate={startDate}
+                  dateFormat="dd.MM.yyyy"
+                  className="form-control"
+                  locale="nb"
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group>
+                <Form.Label>Search</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Search by name or email"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+        </Card.Body>
+      </Card>
       {loading ? (
         <div className="text-center">
           <Spinner animation="border" role="status">
@@ -169,60 +206,53 @@ const AdminReservations = () => {
           </Spinner>
         </div>
       ) : (
-        <Table responsive striped bordered hover>
-          <thead>
-            <tr>
-            <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                confirmationNumber {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </th>
-              <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                Name {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </th>
-              <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
-                Email {sortField === 'email' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </th>
-              <th>Phone</th>
-              <th>Guests</th>
-              <th onClick={() => handleSort('reservationTime')} style={{ cursor: 'pointer' }}>
-                Time {sortField === 'reservationTime' && (sortDirection === 'asc' ? '▲' : '▼')}
-              </th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredReservations.map((reservation) => (
-              <tr key={reservation.id} style={getRowStyle(reservation.status)}>
-                <td>{reservation.confirmationNumber}</td>
-                <td>{reservation.name}</td>
-                <td>{reservation.email}</td>
-                <td>{reservation.phone}</td>
-                <td>{reservation.guests}</td>
-                <td>{new Date(reservation.reservationTime).toLocaleString()}</td>
-                <td>{getStatusBadge(reservation.status)}</td>
-                <td>
-                  <Dropdown className="d-inline mr-2">
-                    <Dropdown.Toggle variant="outline-secondary" size="sm" id={`dropdown-${reservation.id}`}>
-                      Change Status
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Confirmed')}>Confirmed</Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Seated')}>Seated</Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Done')}>Done</Dropdown.Item>
-                      <Dropdown.Item onClick={() => handleStatusChange(reservation.id, 'Canceled')}>Canceled</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                  <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation)}>
-                    Edit
-                  </Button>
-                  <Button variant="outline-danger" size="sm" onClick={() => handleDelete(reservation)}>
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <Card>
+          <Card.Body>
+            <div className="table-responsive">
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th onClick={() => handleSort('confirmationNumber')} style={{ cursor: 'pointer' }}>
+                      Confirmation Number {sortField === 'confirmationNumber' && (sortDirection === 'asc' ? '▲' : '▼')}
+                    </th>
+                    <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                      Name {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
+                    </th>
+                    <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
+                      Email {sortField === 'email' && (sortDirection === 'asc' ? '▲' : '▼')}
+                    </th>
+                    <th>Phone</th>
+                    <th>Guests</th>
+                    <th onClick={() => handleSort('reservationTime')} style={{ cursor: 'pointer' }}>
+                      Time {sortField === 'reservationTime' && (sortDirection === 'asc' ? '▲' : '▼')}
+                    </th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReservations.map((reservation) => (
+                    <tr key={reservation.id}>
+                      <td>{reservation.confirmationNumber}</td>
+                      <td>{reservation.name}</td>
+                      <td>{reservation.email}</td>
+                      <td>{reservation.phone}</td>
+                      <td>{reservation.guests}</td>
+                      <td>{formatReservationTime(reservation.reservationTime)}</td>
+                      <td>
+                        <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation)}>
+                          Edit
+                        </Button>
+                        <Button variant="outline-danger" size="sm" onClick={() => handleDelete(reservation)}>
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </Card.Body>
+        </Card>
       )}
       {!loading && filteredReservations.length === 0 && (
         <p className="text-center">No reservations found.</p>
@@ -248,68 +278,76 @@ const AdminReservations = () => {
 
       {/* Edit Modal */}
       <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Reservation</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                name="name"
-                value={editFormData.name}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                name="email"
-                value={editFormData.email}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Phone</Form.Label>
-              <Form.Control
-                type="text"
-                name="phone"
-                value={editFormData.phone}
-                onChange={handleEditChange}
-                readOnly
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Guests</Form.Label>
-              <Form.Control
-                type="number"
-                name="guests"
-                value={editFormData.guests}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Reservation Time</Form.Label>
-              <Form.Control
-                type="datetime-local"
-                name="reservationTime"
-                value={editFormData.reservationTime ? new Date(editFormData.reservationTime).toISOString().slice(0, -1) : ''}
-                onChange={handleEditChange}
-              />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleEditSubmit}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+  <Modal.Header closeButton>
+    <Modal.Title>Edit Reservation</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form>
+      <Form.Group className="mb-3">
+        <Form.Label>Name</Form.Label>
+        <Form.Control
+          type="text"
+          name="name"
+          value={editFormData.name}
+          onChange={handleEditChange}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Email</Form.Label>
+        <Form.Control
+          type="email"
+          name="email"
+          value={editFormData.email}
+          onChange={handleEditChange}
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Phone</Form.Label>
+        <Form.Control
+          type="text"
+          name="phone"
+          value={editFormData.phone}
+          onChange={handleEditChange}
+          readOnly
+        />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Guests</Form.Label>
+        <Form.Control
+          type="number"
+          name="guests"
+          value={editFormData.guests}
+          onChange={handleEditChange}
+        />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Reservation Time</Form.Label>
+        <div className="custom-date-picker-wrapper">
+          <DatePicker
+            selected={editFormData.reservationTime}
+            onChange={handleEditDateChange}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            dateFormat="dd.MM.yyyy HH:mm"
+            className="form-control"
+            locale="nb"
+          />
+        </div>
+      </Form.Group>
+    </Form>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
+      Cancel
+    </Button>
+    <Button variant="primary" onClick={handleEditSubmit}>
+      Save Changes
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </Container>
   );
 };
