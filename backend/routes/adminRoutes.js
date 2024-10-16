@@ -4,8 +4,8 @@ const {
   getAllTakeawayOrders, 
   cancelReservation, 
   cancelTakeawayOrder,
-  updateReservation // Add this import
-} = require('../controllers/adminController');
+  updateReservation 
+} = require('../controllers/adminController'); // Ensure this path is correct
 
 const router = express.Router();
 
@@ -22,6 +22,6 @@ router.delete('/reservations/:phoneNumber', cancelReservation);
 router.delete('/takeaway-orders/:orderNumber/:customerPhone', cancelTakeawayOrder);
 
 // PUT request to update a reservation
-router.put('/reservations/:id', updateReservation); // Add this route
+router.put('/reservations/:id', updateReservation);
 
 module.exports = router;

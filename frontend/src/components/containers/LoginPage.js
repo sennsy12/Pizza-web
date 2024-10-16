@@ -15,26 +15,31 @@ const StyledButton = styled(Button)`
 `;
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
-    const [error, setError] = useState('');
-    const navigate = useNavigate();
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError('');
-      try {
-        const success = await loginUser(email, password, rememberMe);
-        if (success) {
-          navigate('/admin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    try {
+      const success = await loginUser(email, password);
+      if (success) {
+        const role = localStorage.getItem('role'); // Get the user role from localStorage
+        if (role === 'admin') {
+          navigate('/admin'); // Redirect to admin panel
         } else {
-          setError('Login failed. Please check your credentials and try again.');
+          navigate('/'); // Redirect to home page or customer dashboard
         }
-      } catch (err) {
-        setError('An error occurred. Please try again later.');
+      } else {
+        setError('Login failed. Please check your credentials and try again.');
       }
-    };
+    } catch (err) {
+      setError('An error occurred. Please try again later.');
+    }
+  };
 
 
 

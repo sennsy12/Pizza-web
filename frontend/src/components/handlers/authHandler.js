@@ -6,12 +6,13 @@ const API_BASE_URL = 'http://localhost:5001/api/auth';
 export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/login`, { email, password });
-    const { token } = response.data;
-    localStorage.setItem('token', token);
-    return true;
+    const { token, role } = response.data; // Get the token and role from the response
+    localStorage.setItem('token', token); // Store the token
+    localStorage.setItem('role', role); // Store the user role
+    return true; // Indicate success
   } catch (error) {
     console.error('Login error:', error);
-    return false;
+    return false; // Indicate failure
   }
 };
 
