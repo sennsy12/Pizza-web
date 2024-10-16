@@ -3,20 +3,25 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../models/user'); // Assuming you have a User model
 const bcrypt = require('bcrypt');
 
-const authenticateUser = async (req, res, next) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ where: { email } });
-    if (user && await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-      res.json({ token });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+// Middleware to authenticate a user based on the token provided in the Authorization header
+const authenticateUser = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log('Token received:', token); // Log the token
+  if (!token) {
+    return res.status(403).json({ message: 'No token provided' });
   }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      console.log('Token verification failed:', err); // Log the error
+      return res.status(401).json({ message: 'Failed to authenticate token' });
+    }
+    req.user = decoded;
+    console.log('Decoded user info:', req.user); // Log decoded user info
+    next();
+  });
 };
+
 
 const authorizeAdmin = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];

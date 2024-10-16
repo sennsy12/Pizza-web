@@ -1,7 +1,6 @@
-// customer.js
-
 const { DataTypes } = require('sequelize');
 const sequelize = require('../db');
+const User = require('./user'); // Import the User model
 
 const Customer = sequelize.define('customer', {
     id: {
@@ -34,5 +33,8 @@ const Customer = sequelize.define('customer', {
     createdAt: 'created_at',
     updatedAt: false,
 });
+
+// Associate Customer with User
+Customer.belongsTo(User, { foreignKey: 'user_id' });
 
 module.exports = Customer;

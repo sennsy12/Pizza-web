@@ -15,6 +15,7 @@ import AdminTakeawayOrders from './admin/AdminTakeawayOrders';
 import LoginPage from './containers/LoginPage';
 import RegisterPage from './containers/RegisterPage';
 import PrivateRoute from './PrivateRoute';  // Import PrivateRoute
+import ProfilePage from './containers/ProfilePage'; 
 
 const MainComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);  
@@ -37,6 +38,7 @@ const MainComponent = () => {
           <Route path="/confirmation" element={<ReservationPageConfirmation />} />
           <Route path="/takeaway" element={<TakeawayPage />} />
           <Route path="/takeawaypageConfirmation" element={<TakeawayPageConfirmation />} />
+          <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
           {/* Protected admin routes */}
           <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
           <Route path="/admin/reservations" element={<PrivateRoute><AdminReservations /></PrivateRoute>} />

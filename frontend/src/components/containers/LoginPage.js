@@ -25,13 +25,13 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     try {
-      const success = await loginUser(email, password);
+      const success = await loginUser(email, password, rememberMe); // Pass rememberMe
       if (success) {
         const role = localStorage.getItem('role'); // Get the user role from localStorage
         if (role === 'admin') {
           navigate('/admin'); // Redirect to admin panel
         } else {
-          navigate('/'); // Redirect to home page or customer dashboard
+          navigate('/profile'); // Redirect to home page or customer dashboard
         }
       } else {
         setError('Login failed. Please check your credentials and try again.');
@@ -40,7 +40,6 @@ const LoginPage = () => {
       setError('An error occurred. Please try again later.');
     }
   };
-
 
 
   return (
