@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, ProgressBar } from 'react-bootstrap';
 import { createTakeawayOrder } from '../handlers/takeawayHandler';
-import MenuSelection from './MenuSelection';
-import CustomerInfo from './CustomerInfo';
-import Payment from './Payment';
-import OrderSummary from './OrderSummary';
+import MenuSelection from '../containers/MenuSelection';
+import CustomerInfo from '../containers/CustomerInfo';
+import Payment from '../containers/Payment';
+import OrderSummary from '../containers/OrderSummary';
 
 const STEP_MENU_SELECTION = 1;
 const STEP_CUSTOMER_INFO = 2;

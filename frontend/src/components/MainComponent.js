@@ -1,34 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
-import HomePage from './HomePage';
-import Menu from './Menu';
-import ReservationPage from './containers/reservationPage';
-import ReservationPageConfirmation from './containers/reservationPageConfirmation';
-import TakeawayPage from './containers/takeawayPage';
-import TakeawayPageConfirmation from './containers/takeawaypageConfirmation';
+import HomePage from './pages/HomePage';
+import Menu from './containers/Menu';
+import ReservationPage from './pages/reservationPage';
+import ReservationPageConfirmation from './confirmations/reservationPageConfirmation';
+import TakeawayPage from './pages/takeawayPage';
+import TakeawayPageConfirmation from './confirmations/takeawaypageConfirmation';
 import Header from './assets/Header';
 import AdminHeader from './assets/AdminHeader'; 
+import ProfileHeader from './assets/ProfileHeader'; 
 import Footer from './assets/Footer';
 import AdminDashboard from './admin/AdminDashboard';
 import AdminReservations from './admin/AdminReservations';
 import AdminTakeawayOrders from './admin/AdminTakeawayOrders';
-import LoginPage from './containers/LoginPage';
-import RegisterPage from './containers/RegisterPage';
-import PrivateRoute from './PrivateRoute';  // Import PrivateRoute
-import ProfilePage from './containers/ProfilePage'; 
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import PrivateRoute from '../hooks/PrivateRoute';  
+import ProfilePage from './pages/ProfilePage'; 
 
 const MainComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);  
+  const [isUser, setIsUser] = useState(false); 
   const location = useLocation();
 
   useEffect(() => {
+    const role = localStorage.getItem('role');
     const isAdminPath = location.pathname.startsWith('/admin');
-    setIsAdmin(isAdminPath);  
+    
+    setIsAdmin(role === 'admin' && isAdminPath);  
+    setIsUser(role === 'user' && !isAdminPath);   
   }, [location]);  
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      {isAdmin ? <AdminHeader /> : <Header />}
+      {isAdmin ? <AdminHeader /> : (isUser ? <ProfileHeader /> : <Header />)}
       <main className="flex-grow-1" style={{ paddingTop: '60px' }}>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -38,11 +43,31 @@ const MainComponent = () => {
           <Route path="/confirmation" element={<ReservationPageConfirmation />} />
           <Route path="/takeaway" element={<TakeawayPage />} />
           <Route path="/takeawaypageConfirmation" element={<TakeawayPageConfirmation />} />
-          <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-          {/* Protected admin routes */}
-          <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
-          <Route path="/admin/reservations" element={<PrivateRoute><AdminReservations /></PrivateRoute>} />
-          <Route path="/admin/takeaway-orders" element={<PrivateRoute><AdminTakeawayOrders /></PrivateRoute>} />
+          
+          {/* Protected routes */}
+          <Route path="/profile" element={
+            <PrivateRoute allowedRoles={['user']}>
+              <ProfilePage />
+            </PrivateRoute>
+          } />
+          
+          {/* Admin Protected Routes */}
+          <Route path="/admin" element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminDashboard />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/reservations" element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminReservations />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/takeaway-orders" element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminTakeawayOrders />
+            </PrivateRoute>
+          } />
+          
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Row, Col, Button, Card } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import FeatureSection from './containers/HomePageFeature'; // Import the FeatureSection component
+import FeatureSection from '../containers/HomePageFeature'; // Import the FeatureSection component
 
 const HomePage = () => {
   return (

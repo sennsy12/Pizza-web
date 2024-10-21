@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Button, Modal, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faUtensils, faTachometerAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faCalendarAlt, faUtensils, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
-const AdminHeader = () => {
+const ProfileHeader = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
 
@@ -19,23 +19,23 @@ const AdminHeader = () => {
     <>
       <Navbar bg="light" expand="lg" className="shadow-sm" sticky="top">
         <Container fluid>
-          <Navbar.Brand as={Link} to="/admin" className="fw-bold text-primary">
-            Admin Panel
+          <Navbar.Brand as={Link} to="/profile" className="fw-bold text-primary">
+            My Profile
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/admin/reservations" className="mx-2 text-dark">
+              <Nav.Link as={Link} to="/profile" className="mx-2 text-dark">
+                <FontAwesomeIcon icon={faUser} className="me-2" />
+                Profile
+              </Nav.Link>
+              <Nav.Link as={Link} to="/reservations" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
                 Reservations
               </Nav.Link>
-              <Nav.Link as={Link} to="/admin/takeaway-orders" className="mx-2 text-dark">
+              <Nav.Link as={Link} to="/orders" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faUtensils} className="me-2" />
-                Takeaway Orders
-              </Nav.Link>
-              <Nav.Link as={Link} to="/admin" className="mx-2 text-dark">
-                <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
-                Dashboard
+                Orders
               </Nav.Link>
             </Nav>
             <Button 
@@ -68,4 +68,4 @@ const AdminHeader = () => {
   );
 };
 
-export default AdminHeader;
+export default ProfileHeader;
