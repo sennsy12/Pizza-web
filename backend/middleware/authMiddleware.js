@@ -1,7 +1,7 @@
 // authMiddleware.js
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user'); // Assuming you have a User model
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Updated to use bcryptjs
 
 // Middleware to authenticate a user based on the token provided in the Authorization header
 const authenticateUser = (req, res, next) => {
