@@ -73,14 +73,14 @@ const AdminReservations = () => {
     setSelectedReservation(reservation);
     setShowConfirmModal(true);
   };
-
+  
   const confirmDelete = async () => {
     if (selectedReservation) {
       try {
-        const success = await deleteReservation(selectedReservation.phone);
+        const success = await deleteReservation(selectedReservation.confirmationNumber);
         if (success) {
           setReservations(prevReservations => 
-            prevReservations.filter(res => res.phone !== selectedReservation.phone)
+            prevReservations.filter(res => res.confirmationNumber !== selectedReservation.confirmationNumber)
           );
         } else {
           console.error('Failed to delete reservation');
@@ -93,6 +93,7 @@ const AdminReservations = () => {
       }
     }
   };
+  
 
   const formatReservationTime = (time) => {
     return moment(time).tz('Europe/Oslo').format('DD.MM.YYYY HH:mm');
@@ -128,20 +129,24 @@ const AdminReservations = () => {
       try {
         const updatedReservationData = {
           ...editFormData,
-          reservationTime: moment(editFormData.reservationTime).tz('Europe/Oslo').format()
+          reservationTime: moment(editFormData.reservationTime).tz('Europe/Oslo').format(),
         };
-        const updatedReservation = await updateReservation(selectedReservation.id, updatedReservationData);
-        setReservations(prevReservations => 
-          prevReservations.map(res => 
-            res.id === updatedReservation.id ? updatedReservation : res
-          )
-        );
+        await updateReservation(selectedReservation.id, updatedReservationData);
+        
+        // Reload the reservations
+        await loadReservations();
+  
+        // Close the edit modal
         setShowEditModal(false);
+        setSelectedReservation(null);
+        setEditFormData({ name: '', email: '', phone: '', guests: 1, reservationTime: '' });
       } catch (error) {
         console.error('Error updating reservation:', error);
       }
     }
   };
+  
+  
 
   return (
     <Container fluid className="py-4">
@@ -277,7 +282,7 @@ const AdminReservations = () => {
       </Modal>
 
       {/* Edit Modal */}
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+<Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
   <Modal.Header closeButton>
     <Modal.Title>Edit Reservation</Modal.Title>
   </Modal.Header>
@@ -347,6 +352,7 @@ const AdminReservations = () => {
     </Button>
   </Modal.Footer>
 </Modal>
+
 
     </Container>
   );

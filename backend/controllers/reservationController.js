@@ -1,4 +1,4 @@
-// reservationcontroller.js
+// controllers/reservationController.js
 
 const Reservation = require('../models/reservation');
 const Customer = require('../models/customer');
@@ -6,19 +6,19 @@ const { sendConfirmationSms } = require('../handlers/twilioHandler');
 const moment = require('moment-timezone');
 const sequelize = require('../db');
 
-// Function to generate a random alphanumeric string
-const generateConfirmationNumber = () => {
-  const length = 6; // Length of the confirmation number
+// Generate a random alphanumeric confirmation number
+function generateConfirmationNumber() {
+  const length = 6; 
   const chars = '0123456789';
   let result = '';
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
-};
+}
 
-// Function to get or create a customer by phone number
-const getOrCreateCustomerByPhone = async (phone, name, lastName, email) => {
+// Get or create a customer by phone number
+async function getOrCreateCustomerByPhone(phone, name, lastName, email) {
   try {
     let customer = await Customer.findOne({ where: { phone } });
     if (!customer) {
@@ -28,10 +28,10 @@ const getOrCreateCustomerByPhone = async (phone, name, lastName, email) => {
   } catch (error) {
     throw new Error('Error fetching or creating customer');
   }
-};
+}
 
 // Create a new reservation
-exports.createReservation = async (req, res) => {
+async function createReservation(req, res) {
   const { name, lastName, email, phone, guests, reservationTime } = req.body;
 
   if (!name || !lastName || !email || !phone || !guests || !reservationTime) {
@@ -41,7 +41,7 @@ exports.createReservation = async (req, res) => {
   try {
     const customer = await getOrCreateCustomerByPhone(phone, name, lastName, email);
 
-    // Store the reservation time as UTC in the database
+    // Store reservation time as UTC
     const utcReservationTime = moment.utc(reservationTime).toDate();
 
     const newReservation = await Reservation.create({
@@ -64,11 +64,12 @@ exports.createReservation = async (req, res) => {
     console.error('Error creating reservation:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-};
+}
 
-exports.getReservationStats = async (req, res) => {
+// Fetch reservation statistics
+async function getReservationStats(req, res) {
   try {
-    const [results, metadata] = await sequelize.query(`
+    const [results] = await sequelize.query(`
       SELECT 
         SUM(guests) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS "guests_today",
         SUM(guests) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE)) AS "guests_this_week",
@@ -87,4 +88,9 @@ exports.getReservationStats = async (req, res) => {
     console.error('Failed to fetch reservation stats:', error);
     res.status(500).json({ error: 'Failed to fetch reservation stats', details: error.message });
   }
+}
+
+module.exports = {
+  createReservation,
+  getReservationStats
 };

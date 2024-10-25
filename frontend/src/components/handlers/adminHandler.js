@@ -3,8 +3,6 @@ import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:5001/api';
 
-
-
 export const fetchReservations = async () => {
   try {
     const token = localStorage.getItem('token'); // Retrieve the token from localStorage
@@ -38,7 +36,12 @@ export const fetchTakeawayOrders = async () => {
 // Function to update a reservation
 export const updateReservation = async (id, reservationData) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/admin/reservations/${id}`, reservationData);
+    const token = localStorage.getItem('token'); // Retrieve the token
+    const response = await axios.put(`${API_BASE_URL}/admin/reservations/${id}`, reservationData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the request headers
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Error updating reservation:', error.response ? error.response.data : error.message);
@@ -47,9 +50,14 @@ export const updateReservation = async (id, reservationData) => {
 };
 
 // Function to delete a reservation
-export const deleteReservation = async ( phoneNumber) => {
+export const deleteReservation = async (confirmationNumber) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/admin/reservations/${phoneNumber}`);
+    const token = localStorage.getItem('token'); // Retrieve the token
+    const response = await axios.delete(`${API_BASE_URL}/admin/reservations/${confirmationNumber}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the request headers
+      },
+    });
     return response.data.message === 'Reservation cancelled successfully';
   } catch (error) {
     console.error('Error deleting reservation:', error.response ? error.response.data : error.message);
@@ -57,11 +65,16 @@ export const deleteReservation = async ( phoneNumber) => {
   }
 };
 
+
 // Function to delete a takeaway order
 export const deleteTakeawayOrder = async (orderNumber, customerPhone) => {
   try {
-    // Updated URL to match backend DELETE route
-    const response = await axios.delete(`${API_BASE_URL}/admin/takeaway-orders/${orderNumber}/${customerPhone}`);
+    const token = localStorage.getItem('token'); // Retrieve the token
+    const response = await axios.delete(`${API_BASE_URL}/admin/takeaway-orders/${orderNumber}/${customerPhone}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the request headers
+      },
+    });
     return response.data.message === 'Takeaway order and related entries deleted successfully';
   } catch (error) {
     console.error('Error deleting takeaway order:', error.response ? error.response.data : error.message);

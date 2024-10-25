@@ -1,10 +1,11 @@
-// profileController.js
+// controllers/profileController.js
 
 const Customer = require('../models/customer');
 const TakeawayOrder = require('../models/takeawayOrder');
 const Reservation = require('../models/reservation');
 
-exports.getUserProfile = async (req, res) => {
+// Get user profile
+async function getUserProfile(req, res) {
     const userId = req.user.id; // Assuming you have user ID from the token
 
     try {
@@ -24,7 +25,7 @@ exports.getUserProfile = async (req, res) => {
         });
 
         const takeawayOrders = await TakeawayOrder.findAll({
-            where: { customer_id: customerInfo.id }, // Change this line
+            where: { customer_id: customerInfo.id }, // Ensure this is correct
         });
 
         res.json({
@@ -36,4 +37,8 @@ exports.getUserProfile = async (req, res) => {
         console.error('Error fetching user profile:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
+}
+
+module.exports = {
+    getUserProfile
 };
