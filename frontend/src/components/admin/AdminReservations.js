@@ -133,10 +133,10 @@ const AdminReservations = () => {
         };
         await updateReservation(selectedReservation.id, updatedReservationData);
         
-        // Reload the reservations
+        
         await loadReservations();
   
-        // Close the edit modal
+        
         setShowEditModal(false);
         setSelectedReservation(null);
         setEditFormData({ name: '', email: '', phone: '', guests: 1, reservationTime: '' });

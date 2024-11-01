@@ -37,6 +37,10 @@ const AdminHeader = () => {
                 <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
                 Dashboard
               </Nav.Link>
+              <Nav.Link as={Link} to="/admin/AdminMenu" className="mx-2 text-dark">
+                <FontAwesomeIcon icon={faUtensils} className="me-2" />
+                Menu
+              </Nav.Link>
             </Nav>
             <Button 
               variant="outline-danger" 

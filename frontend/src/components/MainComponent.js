@@ -18,6 +18,7 @@ import RegisterPage from './pages/RegisterPage';
 import PrivateRoute from '../hooks/PrivateRoute';  
 import ProfilePage from './pages/ProfilePage'; 
 import SupportWidget from './containers/SupportChat';
+import AdminMenu from './admin/AdminMenu';
 
 const MainComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);  
@@ -68,13 +69,17 @@ const MainComponent = () => {
               <AdminTakeawayOrders />
             </PrivateRoute>
           } />
+          <Route path="/admin/AdminMenu" element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdminMenu />
+            </PrivateRoute>
+          } />
           
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>
       </main>
       <Footer />
-      {/* Only render SupportWidget if not on an admin page */}
       {!isAdmin && <SupportWidget />}
     </div>
   );

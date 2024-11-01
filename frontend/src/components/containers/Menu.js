@@ -1,3 +1,5 @@
+// containers/Menu.js
+
 import React, { useState } from 'react';
 import { Container, Row, Col, Nav, Card, Badge, Navbar } from 'react-bootstrap';
 import { motion, AnimatePresence } from 'framer-motion';

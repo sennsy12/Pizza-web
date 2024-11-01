@@ -8,6 +8,7 @@ const takeawayRoutes = require('./routes/takeawayRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const menuRoutes = require('./routes/menuRoutes');
 const { authenticateUser, authorizeAdmin } = require('./middleware/authMiddleware');
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/admin', authorizeAdmin, adminRoutes);
 app.use('/api/takeaway', takeawayRoutes);
 app.use('/api/reservation', reservationRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/menu', menuRoutes);
 
 // Test the database connection
 async function testDatabaseConnection() {
