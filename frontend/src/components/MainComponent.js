@@ -17,6 +17,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PrivateRoute from '../hooks/PrivateRoute';  
 import ProfilePage from './pages/ProfilePage'; 
+import SupportWidget from './containers/SupportChat';
 
 const MainComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);  
@@ -73,6 +74,8 @@ const MainComponent = () => {
         </Routes>
       </main>
       <Footer />
+      {/* Only render SupportWidget if not on an admin page */}
+      {!isAdmin && <SupportWidget />}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Spinner, Modal, Tab, Nav } from 'react-bootstrap';
+import { Container, Row, Col, Form, Table, Spinner, Button, Modal, Nav, Tab, ListGroup } from 'react-bootstrap';
 import { fetchTakeawayOrders, deleteTakeawayOrder } from '../handlers/adminHandler';
+import { BsInfoCircle, BsBox, BsClockHistory, BsXCircle } from 'react-icons/bs';
 import moment from 'moment-timezone';
 
 const AdminTakeawayOrders = () => {
@@ -113,35 +114,36 @@ const AdminTakeawayOrders = () => {
     <Container fluid className="py-4">
       <Row className="mb-4">
         <Col>
-          <h1 className="text-primary">All Takeaway Orders</h1>
+          <h1 className="text-primary text-center">All Takeaway Orders</h1>
         </Col>
       </Row>
       <Row className="mb-3">
-        <Col md={6}>
+        <Col md={6} className="mx-auto">
           <Form.Control
             type="text"
             placeholder="Search by customer name or phone"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            className="border-0 shadow-sm"
           />
         </Col>
       </Row>
       {loading ? (
         <div className="text-center">
-          <Spinner animation="border" role="status">
+          <Spinner animation="border" role="status" variant="primary">
             <span className="visually-hidden">Loading...</span>
           </Spinner>
         </div>
       ) : (
-        <Table responsive striped bordered hover>
-          <thead>
+        <Table responsive striped bordered hover className="shadow-sm">
+          <thead className="table-light">
             <tr>
-            <th onClick={() => handleSort('order_number')}>Order time</th>
-              <th onClick={() => handleSort('order_number')}>Order Number</th>
-              <th onClick={() => handleSort('customer_name')}>Customer Name</th>
+              <th onClick={() => handleSort('order_number')} className="cursor-pointer">Order Time</th>
+              <th onClick={() => handleSort('order_number')} className="cursor-pointer">Order Number</th>
+              <th onClick={() => handleSort('customer_name')} className="cursor-pointer">Customer Name</th>
               <th>Phone</th>
-              <th onClick={() => handleSort('total_amount')}>Total Amount</th>
-              <th onClick={() => handleSort('pickup_time')}>Pickup Time</th>
+              <th onClick={() => handleSort('total_amount')} className="cursor-pointer">Total Amount</th>
+              <th onClick={() => handleSort('pickup_time')} className="cursor-pointer">Pickup Time</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -168,68 +170,86 @@ const AdminTakeawayOrders = () => {
         </Table>
       )}
       {!loading && filteredOrders.length === 0 && (
-        <p className="text-center">No takeaway orders found.</p>
+        <p className="text-center text-muted">No takeaway orders found.</p>
       )}
-
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Order Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedOrder && (
-            <Tab.Container defaultActiveKey="details">
-              <Nav variant="tabs">
-                <Nav.Item>
-                  <Nav.Link eventKey="details">Order Details</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="items">Items Ordered</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="activity">Activity Log</Nav.Link>
-                </Nav.Item>
-              </Nav>
-              <Tab.Content className="mt-3">
-                <Tab.Pane eventKey="details">
-                  <p><strong>Order Number:</strong> {selectedOrder.order_number}</p>
-                  <p><strong>Customer:</strong> {selectedOrder.customer_name}</p>
-                  <p><strong>Phone:</strong> {selectedOrder.customer_phone}</p>
-                  <p><strong>Pickup Time:</strong> {new Date(selectedOrder.pickup_time).toLocaleString()}</p>
-                  <p><strong>Total Amount:</strong> ${parseFloat(selectedOrder.total_amount).toFixed(2)}</p>
-                </Tab.Pane>
-                <Tab.Pane eventKey="items">
-                  <h5>Ordered Items:</h5>
-                  <ul className="list-group">
-                    {aggregateItems(JSON.parse(selectedOrder.items_ordered)).map((item, index) => (
-                      <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
-                      <span>{item.name}</span>
-                      <span className="badge bg-primary rounded-pill">Quantity: {item.quantity}</span>
-                      <span className="badge bg-secondary rounded-pill">Price: ${parseFloat(item.price).toFixed(2)}</span>
-                    </li>
-                    ))}
-                  </ul>
-                </Tab.Pane>
-                <Tab.Pane eventKey="activity">
-                  <h5>Activity Log:</h5>
-                  <ul>
-                    {activityLog.map((log, index) => (
-                      <li key={index}>
-                        <strong>{log.timestamp}:</strong> {log.action}
-                      </li>
-                    ))}
-                  </ul>
-                </Tab.Pane>
-              </Tab.Content>
-            </Tab.Container>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
+  
+  <Modal show={showModal} onHide={handleCloseModal} size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title className="text-primary">Order Details</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {selectedOrder && (
+      <Tab.Container defaultActiveKey="details">
+        <Nav variant="tabs" className="mb-4">
+          <Nav.Item>
+            <Nav.Link eventKey="details" className="d-flex align-items-center">
+              <BsInfoCircle className="me-2" /> Order Details
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="items" className="d-flex align-items-center">
+              <BsBox className="me-2" /> Items Ordered
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="activity" className="d-flex align-items-center">
+              <BsClockHistory className="me-2" /> Activity Log
+            </Nav.Link>
+          </Nav.Item>
+        </Nav>
+        <Tab.Content>
+          <Tab.Pane eventKey="details">
+            <ListGroup>
+              <ListGroup.Item>
+                <strong>Order Number:</strong> {selectedOrder.order_number}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Customer:</strong> {selectedOrder.customer_name}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Phone:</strong> {selectedOrder.customer_phone}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Pickup Time:</strong> {new Date(selectedOrder.pickup_time).toLocaleString()}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                <strong>Total Amount:</strong> ${parseFloat(selectedOrder.total_amount).toFixed(2)}
+              </ListGroup.Item>
+            </ListGroup>
+          </Tab.Pane>
+          <Tab.Pane eventKey="items">
+            <h5 className="mb-3">Ordered Items:</h5>
+            <ListGroup>
+              {aggregateItems(JSON.parse(selectedOrder.items_ordered)).map((item, index) => (
+                <ListGroup.Item key={index} className="d-flex justify-content-between align-items-center">
+                  <span>{item.name}</span>
+                  <span className="badge bg-primary rounded-pill">Qty: {item.quantity}</span>
+                  <span className="badge bg-secondary rounded-pill">Price: ${parseFloat(item.price).toFixed(2)}</span>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Tab.Pane>
+          <Tab.Pane eventKey="activity">
+            <h5 className="mb-3">Activity Log:</h5>
+            <ListGroup>
+              {activityLog.map((log, index) => (
+                <ListGroup.Item key={index}>
+                  <strong>{log.timestamp}:</strong> {log.action}
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Tab.Pane>
+        </Tab.Content>
+      </Tab.Container>
+    )}
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleCloseModal}>
+      <BsXCircle className="me-2" /> Close
+    </Button>
+  </Modal.Footer>
+</Modal>
+  
       {/* Confirm Delete Modal */}
       <Modal show={showConfirmDelete} onHide={handleCloseConfirmDelete}>
         <Modal.Header closeButton>

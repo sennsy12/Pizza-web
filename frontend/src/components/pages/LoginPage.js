@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Button, Container, Row, Col, Card, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, Alert, Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
-import { loginUser} from '../handlers/authHandler';
+import { loginUser } from '../handlers/authHandler';
 
 const StyledCard = styled(Card)`
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -19,28 +19,33 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
-      const success = await loginUser(email, password, rememberMe); // Pass rememberMe
+      const success = await loginUser(email, password, rememberMe);
       if (success) {
-        const role = localStorage.getItem('role'); // Get the user role from localStorage
+        const role = localStorage.getItem('role');
         if (role === 'admin') {
-          navigate('/admin'); // Redirect to admin panel
+          navigate('/admin');
         } else {
-          navigate('/profile'); // Redirect to home page or customer dashboard
+          navigate('/profile');
         }
       } else {
         setError('Login failed. Please check your credentials and try again.');
       }
     } catch (err) {
       setError('An error occurred. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const isEmailValid = (email) => /\S+@\S+\.\S+/.test(email);
 
   return (
     <Container className="py-5">
@@ -59,7 +64,11 @@ const LoginPage = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
+                    isInvalid={!isEmailValid(email) && email.length > 0}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    Please enter a valid email address.
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
@@ -70,7 +79,11 @@ const LoginPage = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={3}
                   />
+                  <Form.Control.Feedback type="invalid">
+                    Password must be at least 3 characters long.
+                  </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicCheckbox">
@@ -82,8 +95,8 @@ const LoginPage = () => {
                   />
                 </Form.Group>
 
-                <StyledButton variant="primary" type="submit">
-                  Login
+                <StyledButton variant="primary" type="submit" disabled={loading}>
+                  {loading ? <Spinner animation="border" size="sm" /> : 'Login'}
                 </StyledButton>
               </Form>
               <div className="text-center mt-3">
