@@ -66,22 +66,28 @@ async function createReservation(req, res) {
   }
 }
 
-// Fetch reservation statistics
 async function getReservationStats(req, res) {
   try {
     const [results] = await sequelize.query(`
       SELECT 
-        SUM(guests) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS "guests_today",
-        SUM(guests) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE)) AS "guests_this_week",
-        SUM(guests) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE)) AS "guests_this_month",
-        SUM(guests) AS "total_guests",
-        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) = CURRENT_DATE) AS "reservations_today",
-        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE)) AS "reservations_this_week",
-        COUNT(DISTINCT id) FILTER (WHERE DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE)) AS "reservations_this_month",
+        SUM(COALESCE(guests, 0)) AS "total_guests",
         COUNT(DISTINCT id) AS "total_reservations",
-        COALESCE(AVG(guests), 0) AS "average_guests_per_reservation"
+        COALESCE(AVG(guests), 0) AS "average_guests_per_reservation",
+        MAX(guests) AS "peak_guests_per_reservation",
+        (SELECT MAX(created_at) FROM reservations WHERE DATE(created_at) = CURRENT_DATE) AS "latest_reservation_today",
+        SUM(CASE WHEN DATE(created_at) = CURRENT_DATE THEN guests ELSE 0 END) AS "guests_today",
+        COUNT(DISTINCT CASE WHEN DATE(created_at) = CURRENT_DATE THEN id END) AS "reservations_today",
+        SUM(CASE WHEN DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE) THEN guests ELSE 0 END) AS "guests_this_week",
+        COUNT(DISTINCT CASE WHEN DATE(created_at) >= DATE_TRUNC('week', CURRENT_DATE) THEN id END) AS "reservations_this_week",
+        SUM(CASE WHEN DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN guests ELSE 0 END) AS "guests_this_month",
+        COUNT(DISTINCT CASE WHEN DATE(created_at) >= DATE_TRUNC('month', CURRENT_DATE) THEN id END) AS "reservations_this_month"
       FROM reservations;
     `);
+
+ 
+    if (results[0].latest_reservation_today) {
+      results[0].latest_reservation_today = new Date(results[0].latest_reservation_today).toISOString(); 
+    }
 
     res.json(results[0]);
   } catch (error) {
@@ -89,6 +95,10 @@ async function getReservationStats(req, res) {
     res.status(500).json({ error: 'Failed to fetch reservation stats', details: error.message });
   }
 }
+
+
+
+
 
 module.exports = {
   createReservation,

@@ -70,12 +70,14 @@ const MenuSelection = ({ addToCart }) => {
                   >
                     <Card className="h-100 shadow-sm border-0">
                       <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
-                        <Card.Img
-                          variant="top"
-                          src={item.img}
-                          alt={item.name}
-                          style={{ height: '160px', objectFit: 'cover', filter: 'brightness(90%)' }}
-                        />
+                      <Card.Img
+  variant="top"
+  src={`${item.img}.png`} 
+  alt={item.name}
+  className="rounded-top"
+  style={{ height: '200px', objectFit: 'cover', backgroundColor: '#f8f9fa' }}
+/>
+
                         <Badge
                           bg="success"
                           style={{

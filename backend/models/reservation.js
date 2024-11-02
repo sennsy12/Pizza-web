@@ -42,7 +42,6 @@ const Reservation = sequelize.define('reservation', {
     phone: {
         type: DataTypes.STRING,
         allowNull: false,
-        // Remove unique constraint
     },
     guests: {
         type: DataTypes.INTEGER,
@@ -66,11 +65,6 @@ const Reservation = sequelize.define('reservation', {
     cancelled: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-    },
-    cancellationReason: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: 'cancellation_reason'
     },
     smsConfirmed: {
         type: DataTypes.BOOLEAN,

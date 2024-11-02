@@ -25,17 +25,17 @@ const AdminHeader = () => {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link as={Link} to="/admin/reservations" className="mx-2 text-dark">
-                <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
-                Reservations
+            <Nav.Link as={Link} to="/admin" className="mx-2 text-dark">
+                <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
+                Dashboard
               </Nav.Link>
               <Nav.Link as={Link} to="/admin/takeaway-orders" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faUtensils} className="me-2" />
                 Takeaway Orders
               </Nav.Link>
-              <Nav.Link as={Link} to="/admin" className="mx-2 text-dark">
-                <FontAwesomeIcon icon={faTachometerAlt} className="me-2" />
-                Dashboard
+              <Nav.Link as={Link} to="/admin/reservations" className="mx-2 text-dark">
+                <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
+                Reservations
               </Nav.Link>
               <Nav.Link as={Link} to="/admin/AdminMenu" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faUtensils} className="me-2" />

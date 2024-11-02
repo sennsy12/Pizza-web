@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Nav, Card, Badge, Navbar } from 'react-bootstrap';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPizzaSlice, FaGlassWhiskey, FaHamburger, FaUtensils, FaIceCream, FaAppleAlt } from 'react-icons/fa'; // Import the icons
-import { fetchMenuItems } from '../handlers/menuHandler'; // Update this path to where your handler is located
+import { FaPizzaSlice, FaGlassWhiskey, FaHamburger, FaUtensils, FaIceCream, FaListAlt } from 'react-icons/fa'; 
+import { fetchMenuItems } from '../handlers/menuHandler'; 
 
 const MenuItem = ({ item }) => (
   <Card className="h-100 border-0 shadow-sm rounded">
-    <Card.Img variant="top" src={item.img} alt={item.name} className="rounded-top" style={{ height: '200px', objectFit: 'cover' }} />
+    <Card.Img
+      variant="top"
+      src={`${item.img}.png`} 
+      alt={item.name}
+      className="rounded-top"
+      style={{ height: '200px', objectFit: 'scale-down', backgroundColor: '#f8f9fa' }}
+    />
     <Card.Body>
       <Card.Title>{item.name}</Card.Title>
       <Card.Text>{item.description}</Card.Text>
@@ -16,13 +22,13 @@ const MenuItem = ({ item }) => (
 );
 
 const Menu = () => {
-  const [activeCategory, setActiveCategory] = useState('Beverages');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [menuItems, setMenuItems] = useState([]); 
   const [loading, setLoading] = useState(true); 
   const [error, setError] = useState(null); 
 
   // List of categories
-  const categories = ['Appetizers','Pizza', 'Hamburgers', 'Desserts', 'Beverages'];
+  const categories = ['All', 'Appetizers', 'Pizza', 'Hamburgers', 'Desserts', 'Beverages'];
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -40,12 +46,13 @@ const Menu = () => {
     fetchMenu();
   }, []);
 
-  const filteredItems = menuItems.filter(item =>
-    item.category === activeCategory 
-  );
+  const filteredItems = activeCategory === 'All'
+    ? menuItems
+    : menuItems.filter(item => item.category === activeCategory);
 
   // Icons for each category
   const icons = {
+    All: <FaListAlt />, // Use a general icon for 'All'
     Appetizers: <FaUtensils />,
     Pizza: <FaPizzaSlice />,
     Hamburgers: <FaHamburger />,

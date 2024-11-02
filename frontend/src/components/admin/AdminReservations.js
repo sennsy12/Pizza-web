@@ -25,8 +25,18 @@ const AdminReservations = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
   const [editFormData, setEditFormData] = useState({ name: '', email: '', phone: '', guests: 1, reservationTime: '' });
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 1); 
+    return date;
+  });
+  
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 1); 
+    return date;
+  });
+  
 
   useEffect(() => {
     loadReservations();
@@ -56,6 +66,8 @@ const AdminReservations = () => {
       setSortDirection('asc');
     }
   };
+
+  
 
   const sortedReservations = [...reservations].sort((a, b) => {
     if (a[sortField] < b[sortField]) return sortDirection === 'asc' ? -1 : 1;

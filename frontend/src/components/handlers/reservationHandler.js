@@ -15,11 +15,32 @@ const createReservation = async (formData) => {
 export const fetchReservationStats = async () => {
   try {
     const response = await axios.get('http://localhost:5001/api/reservation/reservation-stats');
-    return response.data;
+
+    // Format data for frontend use if needed
+    const stats = response.data;
+
+    // Organize data for easier use in cards and charts
+    const formattedStats = {
+      guestsToday: stats.guests_today,
+      reservationsToday: stats.reservations_today,
+      hourlyToday: stats.hourly_today || [],
+      guestsThisWeek: stats.guests_this_week,
+      reservationsThisWeek: stats.reservations_this_week,
+      guestsThisMonth: stats.guests_this_month,
+      reservationsThisMonth: stats.reservations_this_month,
+      peakGuestsPerReservation: stats.peak_guests_per_reservation,
+      latestReservationToday: stats.latest_reservation_today,
+      averageGuestsPerReservation: stats.average_guests_per_reservation,
+      totalGuests: stats.total_guests,
+      totalReservations: stats.total_reservations,
+    };
+
+    return formattedStats;
   } catch (error) {
     console.error('Fetch error:', error.response ? error.response.data : error.message);
     throw error;
   }
 };
+
 
 export default createReservation;
