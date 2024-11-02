@@ -22,7 +22,7 @@ const OrderSummary = ({ cart, totalPrice, removeFromCart, updateQuantity }) => {
               <Row key={item.id} className="align-items-center mb-3">
                 <Col xs={6} className="d-flex flex-column">
                   <strong>{item.name}</strong>
-                  <small className="text-muted">${item.price.toFixed(2)}</small>
+                  <small className="text-muted">{item.price}</small>
                 </Col>
                 <Col xs={4} className="d-flex align-items-center">
                   <InputGroup size="sm">
@@ -66,7 +66,7 @@ const OrderSummary = ({ cart, totalPrice, removeFromCart, updateQuantity }) => {
             <hr />
             <div className="d-flex justify-content-between align-items-center">
               <h6>Total:</h6>
-              <h6>${totalPrice.toFixed(2)}</h6>
+              <h6>${totalPrice}</h6>
             </div>
           </>
         )}

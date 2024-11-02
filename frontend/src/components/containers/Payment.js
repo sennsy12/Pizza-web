@@ -78,7 +78,7 @@ const Payment = ({ totalPrice }) => {
       exit={{ opacity: 0, x: -100 }}
     >
       <h2 className="mb-4">Payment</h2>
-      <p>Total to pay: ${totalPrice.toFixed(2)}</p>
+      <p>Total to pay: kr {totalPrice}</p>
 
       {error && <Alert variant="danger">{error}</Alert>}
 
@@ -139,7 +139,7 @@ const Payment = ({ totalPrice }) => {
         </Form.Group>
 
         <Button variant="primary" type="submit" disabled={processing}>
-          {processing ? <Spinner animation="border" size="sm" /> : `Pay $${totalPrice.toFixed(2)}`}
+          {processing ? <Spinner animation="border" size="sm" /> : `Pay kr ${totalPrice}`}
         </Button>
       </Form>
     </motion.div>

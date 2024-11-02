@@ -1,26 +1,42 @@
-// containers/MenuSelection.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Card, Button, Tab, Nav, Badge, Spinner } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { Cart } from 'react-bootstrap-icons';
+import { fetchMenuItems } from '../handlers/menuHandler';
 
-const MenuSelection = ({ menu, addToCart }) => {
+const MenuSelection = ({ addToCart }) => {
+  const [menu, setMenu] = useState([]);
   const [activeCategory, setActiveCategory] = useState('All');
-  const [loading, setLoading] = useState(false);
+  const [loadingItems, setLoadingItems] = useState({});
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      try {
+        const items = await fetchMenuItems();
+        setMenu(items);
+      } catch (err) {
+        console.error('Error fetching menu items:', err);
+        setError('Failed to load menu items');
+      }
+    };
+
+    fetchMenu();
+  }, []);
 
   const handleAddToCart = async (item) => {
-    setLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 200)); // Simulating an API call delay
+    setLoadingItems((prev) => ({ ...prev, [item.id]: true }));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     addToCart({ ...item, quantity: 1 });
-    setLoading(false);
+    setLoadingItems((prev) => ({ ...prev, [item.id]: false }));
   };
 
   const categories = ['All', ...new Set(menu.map((item) => item.category))];
-
   const filteredMenu = activeCategory === 'All' 
     ? menu 
     : menu.filter((item) => item.category === activeCategory);
+
+  if (error) return <p>{error}</p>;
 
   return (
     <motion.div
@@ -56,7 +72,7 @@ const MenuSelection = ({ menu, addToCart }) => {
                       <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
                         <Card.Img
                           variant="top"
-                          src={item.image}
+                          src={item.img}
                           alt={item.name}
                           style={{ height: '160px', objectFit: 'cover', filter: 'brightness(90%)' }}
                         />
@@ -71,7 +87,7 @@ const MenuSelection = ({ menu, addToCart }) => {
                             borderRadius: '12px',
                           }}
                         >
-                          ${item.price.toFixed(2)}
+                          ${item.price}
                         </Badge>
                       </div>
                       <Card.Body className="d-flex flex-column">
@@ -81,12 +97,12 @@ const MenuSelection = ({ menu, addToCart }) => {
                           <Button
                             variant="primary"
                             onClick={() => handleAddToCart(item)}
-                            disabled={loading}
+                            disabled={loadingItems[item.id]}
                             className="w-100"
                             aria-label={`Add ${item.name} to cart`}
                           >
-                            {loading ? <Spinner animation="border" size="sm" /> : <Cart className="me-2" />}
-                            {loading ? 'Adding...' : 'Add to Cart'}
+                            {loadingItems[item.id] ? <Spinner animation="border" size="sm" /> : <Cart className="me-2" />}
+                            {loadingItems[item.id] ? 'Adding...' : 'Add to Cart'}
                           </Button>
                         </div>
                       </Card.Body>

@@ -26,13 +26,14 @@ const TakeawaypageConfirmation = () => {
               </p>
               <p className="mb-4">Order Summary:</p>
               <ul className="list-unstyled">
-                {orderData?.itemsOrdered.map((item) => (
-                  <li key={item.id}>
-                    {item.quantity}x {item.name} - ${item.price.toFixed(2)}
-                  </li>
-                ))}
-              </ul>
-              <h4>Total: ${orderData?.totalAmount.toFixed(2)}</h4>
+  {orderData?.itemsOrdered.map((item) => (
+    <li key={item.id}>
+      {item.quantity}x {item.name} - Kr {parseFloat(item.price).toFixed(2)}
+    </li>
+  ))}
+</ul>
+<h4>Total: Kr {parseFloat(orderData?.totalAmount).toFixed(2)}</h4>
+
               <Button variant="primary" className="mt-4" onClick={handleGoHome}>
                 Go Home
               </Button>        
