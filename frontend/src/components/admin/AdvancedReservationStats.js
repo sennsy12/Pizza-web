@@ -28,8 +28,8 @@ const formatDate = (dateString) => {
 };
 
 const AdvancedReservationStats = () => {
-  const [startDate, setStartDate] = useState(() => {const date = new Date();date.setDate(date.getDate() - 1);return date;});
-  const [endDate, setEndDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(() => {const date = new Date();date.setDate(date.getDate() - 2);return date;});
+  const [endDate, setEndDate] = useState(() => {const date = new Date();date.setDate(date.getDate() + 2);return date;});
   const [guestCount, setGuestCount] = useState(1);
   const [phone, setPhone] = useState('');
   const [data, setData] = useState([]);
