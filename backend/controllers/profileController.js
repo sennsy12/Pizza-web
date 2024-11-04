@@ -6,12 +6,12 @@ const Reservation = require('../models/reservation');
 
 // Get user profile
 async function getUserProfile(req, res) {
-    const userId = req.user.id; // Assuming you have user ID from the token
+    const userId = req.user.id;
 
     try {
         const customerInfo = await Customer.findOne({
             where: {
-                user_id: userId, // Ensure this is correct
+                user_id: userId, 
             },
             attributes: ['id', 'name', 'last_name', 'email', 'phone', 'created_at'],
         });
@@ -21,11 +21,11 @@ async function getUserProfile(req, res) {
         }
 
         const reservations = await Reservation.findAll({
-            where: { customer_id: customerInfo.id }, // Ensure this is correct
+            where: { customer_id: customerInfo.id }, 
         });
 
         const takeawayOrders = await TakeawayOrder.findAll({
-            where: { customer_id: customerInfo.id }, // Ensure this is correct
+            where: { customer_id: customerInfo.id },
         });
 
         res.json({

@@ -41,7 +41,7 @@ async function createReservation(req, res) {
   try {
     const customer = await getOrCreateCustomerByPhone(phone, name, lastName, email);
 
-    // Store reservation time as UTC
+    
     const utcReservationTime = moment.utc(reservationTime).toDate();
 
     const newReservation = await Reservation.create({
@@ -55,7 +55,7 @@ async function createReservation(req, res) {
       confirmationNumber: generateConfirmationNumber(),
     });
 
-    // Convert UTC time to Oslo time for SMS
+    
     const osloTime = moment(utcReservationTime).tz('Europe/Oslo').format('LLL');
     await sendConfirmationSms(phone, newReservation.confirmationNumber, osloTime);
 
@@ -141,8 +141,6 @@ async function getAdvancedReservationStats(req, res) {
       ORDER BY DATE("reservation_time") ASC
     `;
 
-    console.log('Executing query:', query);
-    console.log('Query parameters:', queryParams);
 
     const results = await sequelize.query(query, {
       replacements: queryParams,

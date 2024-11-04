@@ -32,7 +32,7 @@ const getMenuItemById = async (req, res) => {
 const createMenuItem = async (req, res) => {
   const { name, description, img, price, category } = req.body;
 
-  // Basic validation
+  
   if (!name || !description || !price || !category) {
     return res.status(400).json({ error: 'Name, description, price, and category are required' });
   }
@@ -63,7 +63,7 @@ const updateMenuItem = async (req, res) => {
       return res.status(404).json({ error: 'Menu item not found' });
     }
 
-    // Update fields if they are provided in the request body
+    
     if (name !== undefined) item.name = name;
     if (description !== undefined) item.description = description;
     if (img !== undefined) item.img = img;

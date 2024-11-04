@@ -24,7 +24,6 @@ async function createTakeawayOrder(req, res) {
   }
 
   try {
-    // Ensure pickup time is in UTC
     const utcPickupTime = moment.tz(pickupTime, 'Europe/Oslo').utc().toDate();
 
     const newOrder = await TakeawayOrder.create({
@@ -36,7 +35,6 @@ async function createTakeawayOrder(req, res) {
       pickup_time: utcPickupTime,
     });
 
-    // Convert UTC time to Oslo time for SMS
     const localPickupTime = moment(utcPickupTime).tz('Europe/Oslo').format('LLL');
 
     await sendTakeawaySMS(
@@ -44,10 +42,9 @@ async function createTakeawayOrder(req, res) {
       `Thank you ${customerName}, your order is confirmed! Total: $${totalAmount}. Pickup at: ${localPickupTime}`
     );
 
-    // Convert created_at to local time for response
     const localCreatedAt = moment(newOrder.created_at).tz('Europe/Oslo').format('YYYY-MM-DD HH:mm:ss');
 
-    // Respond with order details, including local created_at
+
     res.status(201).json({
       ...newOrder.toJSON(),
       created_at: localCreatedAt,
