@@ -42,5 +42,55 @@ export const fetchReservationStats = async () => {
   }
 };
 
+export const fetchAdvancedReservationStats = async ({
+  startDate,
+  endDate,
+  guestCount = 1,
+  phone,
+  viewType = 'guests' 
+}) => {
+  try {
+    const params = new URLSearchParams({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+      viewType: viewType 
+    });
+
+    if (guestCount > 1) {
+      params.append('guests', guestCount.toString());
+    }
+
+    if (phone) {
+      params.append('phone', phone);
+    }
+
+    console.log('Sending request with params:', params.toString());
+
+    const response = await axios.get('http://localhost:5001/api/reservation/advanced-stats', {
+      params
+    });
+
+    console.log('Response status:', response.status);
+    console.log('Response data:', response.data);
+
+    if (response.status === 200) {
+      return {
+        success: true,
+        data: response.data
+      };
+    } else {
+      throw new Error('Failed to fetch reservation stats');
+    }
+  } catch (error) {
+    console.error('Error fetching advanced reservation stats:', error);
+    if (error.response) {
+      console.error('Error response:', error.response.data);
+    }
+    return {
+      success: false,
+      error: error.response?.data?.error || error.message
+    };
+  }
+};
 
 export default createReservation;

@@ -5,7 +5,7 @@ const Customer = require('../models/customer');
 const { sendConfirmationSms } = require('../handlers/twilioHandler');
 const moment = require('moment-timezone');
 const sequelize = require('../db');
-
+const { Op } = require('sequelize');
 // Generate a random alphanumeric confirmation number
 function generateConfirmationNumber() {
   const length = 6; 
@@ -96,11 +96,73 @@ async function getReservationStats(req, res) {
   }
 }
 
+async function getAdvancedReservationStats(req, res) {
+  try {
+    const { startDate, endDate, guests, phone, viewType } = req.query;
+
+    if (!startDate || !endDate || !viewType) {
+      return res.status(400).json({ error: 'Missing required parameters' });
+    }
+
+    let query = `
+      SELECT 
+        DATE("reservation_time") AS date,
+    `;
+
+    if (viewType === 'guests') {
+      query += `SUM("guests") AS total`;
+    } else if (viewType === 'reservations') {
+      query += `COUNT(*) AS total`;
+    } else {
+      return res.status(400).json({ error: 'Invalid view type' });
+    }
+
+    query += `
+      FROM 
+        "reservations"
+      WHERE 
+        "reservation_time" BETWEEN :startDate AND :endDate
+    `;
+
+    const queryParams = { startDate, endDate };
+
+    if (guests) {
+      query += ` AND "guests" >= :guests`;
+      queryParams.guests = parseInt(guests, 10);
+    }
+
+    if (phone) {
+      query += ` AND "phone" = :phone`;
+      queryParams.phone = phone;
+    }
+
+    query += `
+      GROUP BY DATE("reservation_time")
+      ORDER BY DATE("reservation_time") ASC
+    `;
+
+    console.log('Executing query:', query);
+    console.log('Query parameters:', queryParams);
+
+    const results = await sequelize.query(query, {
+      replacements: queryParams,
+      type: sequelize.QueryTypes.SELECT
+    });
+
+    console.log('Query results:', results);
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error fetching reservation stats:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
+  }
+}
 
 
 
 
 module.exports = {
   createReservation,
+  getAdvancedReservationStats,
   getReservationStats
 };

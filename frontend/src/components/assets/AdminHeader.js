@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Navbar, Nav, Button, Modal, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faUtensils, faTachometerAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarAlt, faUtensils, faTachometerAlt, faSignOutAlt, faChartArea } from '@fortawesome/free-solid-svg-icons';
 
 const AdminHeader = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -36,6 +36,10 @@ const AdminHeader = () => {
               <Nav.Link as={Link} to="/admin/reservations" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faCalendarAlt} className="me-2" />
                 Reservations
+              </Nav.Link>
+              <Nav.Link as={Link} to="/admin/advanced-reservation-stats" className="mx-2 text-dark">
+              <FontAwesomeIcon icon={faChartArea} className="me-2" />
+              Statistics
               </Nav.Link>
               <Nav.Link as={Link} to="/admin/AdminMenu" className="mx-2 text-dark">
                 <FontAwesomeIcon icon={faUtensils} className="me-2" />

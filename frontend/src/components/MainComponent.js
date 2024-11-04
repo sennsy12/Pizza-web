@@ -19,6 +19,7 @@ import PrivateRoute from '../hooks/PrivateRoute';
 import ProfilePage from './pages/ProfilePage'; 
 import SupportWidget from './containers/SupportChat';
 import AdminMenu from './admin/AdminMenu';
+import AdvancedReservationStats from './admin/AdvancedReservationStats';
 
 const MainComponent = () => {
   const [isAdmin, setIsAdmin] = useState(false);  
@@ -74,7 +75,12 @@ const MainComponent = () => {
               <AdminMenu />
             </PrivateRoute>
           } />
-          
+          <Route path="/admin/advanced-reservation-stats" element={
+            <PrivateRoute allowedRoles={['admin']}>
+              <AdvancedReservationStats />
+            </PrivateRoute>
+          } />
+          {/* Other Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Routes>

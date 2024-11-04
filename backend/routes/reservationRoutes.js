@@ -8,5 +8,7 @@ router.post('/', reservationController.createReservation); // Correct route setu
 // Route to get reservation stats
 router.get('/reservation-stats', reservationController.getReservationStats);
 
+router.get('/advanced-stats', reservationController.getAdvancedReservationStats);
+
 module.exports = router;
 
