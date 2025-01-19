@@ -2,7 +2,7 @@
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // Ensure the casing matches the actual file name
+const User = require('../models/user'); 
 
 // Register Controller
 const register = async (req, res) => {
