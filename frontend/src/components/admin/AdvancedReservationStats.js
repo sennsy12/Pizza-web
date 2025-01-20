@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Spinner, Container, Row, Col, Card } from 'react-bootstrap';
 import { fetchAdvancedReservationStats } from '../handlers/reservationHandler';
 import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
 import DatePicker from 'react-datepicker';
-import styled from 'styled-components';
 import 'react-datepicker/dist/react-datepicker.css';
 
-const StyledCard = styled(Card)`
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-`;
 
-const StyledButton = styled(Button)`
-  background-color: #007bff;
-  border: none;
-
-  &:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-  }
-`;
+const colors = {
+  primary: {
+    500: '#943E3C',
+    600: '#7A3230'
+  },
+  dark: {
+    200: '#E2E8F0',
+    500: '#64748B'
+  },
+  white: '#FFFFFF'
+};
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -28,8 +23,16 @@ const formatDate = (dateString) => {
 };
 
 const AdvancedReservationStats = () => {
-  const [startDate, setStartDate] = useState(() => {const date = new Date();date.setDate(date.getDate() - 2);return date;});
-  const [endDate, setEndDate] = useState(() => {const date = new Date();date.setDate(date.getDate() + 2);return date;});
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 2);
+    return date;
+  });
+  const [endDate, setEndDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + 2);
+    return date;
+  });
   const [guestCount, setGuestCount] = useState(1);
   const [phone, setPhone] = useState('');
   const [data, setData] = useState([]);
@@ -50,13 +53,11 @@ const AdvancedReservationStats = () => {
       });
 
       if (result.success) {
-        console.log("Data received:", result.data);
         const parsedData = result.data.map(item => ({
           ...item,
           date: formatDate(item.date),
           total: parseInt(item.total, 10)
         }));
-        console.log("Parsed data:", parsedData);
         setData(parsedData);
       } else {
         setError(result.error || 'Failed to fetch stats');
@@ -72,137 +73,156 @@ const AdvancedReservationStats = () => {
   };
 
   useEffect(() => {
-    loadStats(); 
-  }, []); 
+    loadStats();
+  }, []);
 
   return (
-    <Container className="mt-4">
-      <StyledCard>
-        <Card.Header as="h2" className="text-center text-primary">Advanced Reservation Statistics</Card.Header>
-        <Card.Body>
-          <Form className="mb-4">
-            <Row className="align-items-end">
-              <Col xs={12} md={3} className="mb-2">
-                <Form.Group controlId="startDate">
-                  <Form.Label>Start Date</Form.Label>
-                  <DatePicker
-                    selected={startDate}
-                    onChange={date => setStartDate(date)}
-                    className="form-control"
-                    dateFormat="yyyy-MM-dd"
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={12} md={3} className="mb-2">
-                <Form.Group controlId="endDate">
-                  <Form.Label>End Date</Form.Label>
-                  <DatePicker
-                    selected={endDate}
-                    onChange={date => setEndDate(date)}
-                    className="form-control"
-                    dateFormat="yyyy-MM-dd"
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={12} md={2} className="mb-2">
-                <Form.Group controlId="guestCount">
-                  <Form.Label>Min Guests</Form.Label>
-                  <Form.Control
-                    type="number"
-                    value={guestCount}
-                    onChange={e => setGuestCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
-                    min="1"
-                  />
-                </Form.Group>
-              </Col>
-              <Col xs={12} md={2} className="mb-2">
-                <Form.Group controlId="viewType">
-                  <Form.Label>View Type</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={viewType}
-                    onChange={e => setViewType(e.target.value)}
-                  >
-                    <option value="guests">Guests</option>
-                    <option value="reservations">Reservations</option>
-                  </Form.Control>
-                </Form.Group>
-              </Col>
-              <Col xs={12} md={2} className="mb-2">
-                <Form.Group controlId="phone">
-                  <Form.Label>Phone Number</Form.Label>
-                  <Form.Control
-                    type="text"
-                    value={phone}
-                    onChange={e => setPhone(e.target.value)}
-                    placeholder="Optional"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row className="justify-content-end mt-3">
-              <Col xs="auto">
-                <StyledButton 
-                  onClick={loadStats} 
-                  disabled={loading}
+    <div className="min-h-screen bg-dark-50 p-6 sm:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white rounded-xl shadow-depth p-6 lg:p-8">
+          <h2 className="text-2xl font-bold text-dark-900 text-center mb-8 border-b border-dark-100 pb-4">
+            Advanced Reservation Statistics
+          </h2>
+
+          <div className="space-y-8">
+            {/* Filter Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-dark-700">Start Date</label>
+                <DatePicker
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  dateFormat="yyyy-MM-dd"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-dark-700">End Date</label>
+                <DatePicker
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  dateFormat="yyyy-MM-dd"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-dark-700">Min Guests</label>
+                <input
+                  type="number"
+                  value={guestCount}
+                  onChange={e => setGuestCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                  className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  min="1"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-dark-700">View Type</label>
+                <select
+                  value={viewType}
+                  onChange={e => setViewType(e.target.value)}
+                  className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 >
-                  {loading ? (
-                    <>
-                      <Spinner animation="border" size="sm" role="status" className="me-1" />
-                      <span>Loading...</span>
-                    </>
-                  ) : (
-                    'Load Stats'
-                  )}
-                </StyledButton>
-              </Col>
-            </Row>
-          </Form>
+                  <option value="guests">Guests</option>
+                  <option value="reservations">Reservations</option>
+                </select>
+              </div>
 
-          {error && (
-            <p className="text-center text-danger mt-4">{error}</p>
-          )}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-dark-700">Phone Number</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  placeholder="Optional"
+                  className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                />
+              </div>
+            </div>
 
-          {data.length > 0 && (
-            <ResponsiveContainer width="100%" height={400}>
-            <LineChart 
-              data={data}
-              margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
-            >
-              <XAxis 
-                dataKey="date" 
-                tickFormatter={(value) => value}
-                angle={-45}
-                textAnchor="end"
-                height={70}
-              />
-              <YAxis 
-                domain={[0, dataMax => Math.ceil(dataMax * 1.2)]}
-                tickFormatter={value => Math.round(value)}
-              />
-              <Tooltip />
-              <Legend verticalAlign="top" height={36}/>
-              <CartesianGrid strokeDasharray="3 3" />
-              <Line 
-                type="monotone" 
-                dataKey="total" 
-                stroke="#82ca9d" 
-                name={viewType === 'guests' ? 'Total Guests' : 'Total Reservations'}
-                strokeWidth={2}
-                dot={{ r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-          )}
+            {/* Load Button */}
+            <div className="flex justify-end">
+              <button
+                onClick={loadStats}
+                disabled={loading}
+                className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-medium transition-all duration-300 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin-slow" />
+                    Loading...
+                  </>
+                ) : (
+                  'Load Stats'
+                )}
+              </button>
+            </div>
 
-          {!loading && !error && data.length === 0 && (
-            <p className="text-center mt-4">No data available. Please load stats.</p>
-          )}
+            {/* Error Message */}
+            {error && (
+              <div className="p-4 bg-error-100 text-error-700 rounded-lg animate-fade-in">
+                {error}
+              </div>
+            )}
 
-        </Card.Body>
-      </StyledCard>
-    </Container>
+            {/* Chart */}
+            {data.length > 0 ? (
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={data}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 10 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke={colors.dark[200]} />
+                    <XAxis
+                      dataKey="date"
+                      angle={-45}
+                      textAnchor="end"
+                      height={70}
+                      stroke={colors.dark[500]}
+                    />
+                    <YAxis
+                      domain={[0, dataMax => Math.ceil(dataMax * 1.2)]}
+                      stroke={colors.dark[500]}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: colors.white,
+                        border: `1px solid ${colors.dark[200]}`,
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Legend
+                      verticalAlign="top"
+                      height={36}
+                      wrapperStyle={{ paddingBottom: '20px' }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="total"
+                      stroke={colors.primary[500]}
+                      name={viewType === 'guests' ? 'Total Guests' : 'Total Reservations'}
+                      strokeWidth={2}
+                      dot={{ r: 4, fill: colors.primary[500] }}
+                      activeDot={{ r: 6, fill: colors.primary[600] }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              !loading && !error && (
+                <div className="text-center p-6 bg-dark-50 rounded-lg text-dark-500">
+                  No data available. Please load stats.
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

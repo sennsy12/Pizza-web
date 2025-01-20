@@ -40,9 +40,9 @@ const MenuSelection = ({ addToCart }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
+      exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.5 }}
     >
       <h2 className="text-center mb-4">Explore Our Menu</h2>
@@ -95,15 +95,32 @@ const MenuSelection = ({ addToCart }) => {
                       <Card.Body className="d-flex flex-column">
                         <Card.Title className="text-center mb-2">{item.name}</Card.Title>
                         <Card.Text className="text-muted text-center mb-3">{item.description}</Card.Text>
-                        <div className="mt-auto">
+                        <div className="mt-auto d-flex justify-content-end">
                           <Button
-                            variant="primary"
                             onClick={() => handleAddToCart(item)}
                             disabled={loadingItems[item.id]}
-                            className="w-100"
+                            className="px-3 d-flex align-items-center justify-content-center"
                             aria-label={`Add ${item.name} to cart`}
+                            style={{ 
+                              backgroundColor: '#1e293b',
+                              borderColor: '#1e293b',
+                              fontSize: '0.75rem',
+                              borderRadius: '6px',
+                              padding: '2px 8px',
+                              lineHeight: '1.2',
+                              width: '50%',
+                              height: '28px',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden'
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = '#0f172a'}
+                            onMouseOut={(e) => e.target.style.backgroundColor = '#1e293b'}
                           >
-                            {loadingItems[item.id] ? <Spinner animation="border" size="sm" /> : <Cart className="me-2" />}
+                            {loadingItems[item.id] ? (
+                              <Spinner animation="border" size="sm" />
+                            ) : (
+                              <Cart size={12} className="me-1" />
+                            )}
                             {loadingItems[item.id] ? 'Adding...' : 'Add to Cart'}
                           </Button>
                         </div>

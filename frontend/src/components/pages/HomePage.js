@@ -49,8 +49,63 @@ const HomePage = () => {
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.8 }}
                 >
-                  <Button as={Link} to="/takeaway" variant="danger" size="lg" className="me-3 mb-3">Order Takeaway</Button>
-                  <Button as={Link} to="/reservation" variant="outline-light" size="lg" className="mb-3">Book a Table</Button>
+                  <Button 
+                    as={Link} 
+                    to="/menu" 
+                    size="md" 
+                    className="me-3 mb-3"
+                    style={{ 
+                      backgroundColor: '#4A5D4F',
+                      borderColor: '#4A5D4F',
+                      color: 'white',
+                      borderRadius: '20px',
+                      padding: '8px 20px'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#4A5D4F'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#4A5D4F'}
+                  >
+                    View Menu
+                  </Button>
+                  <Button 
+                    as={Link} 
+                    to="/takeaway" 
+                    size="md" 
+                    className="me-3 mb-3"
+                    style={{ 
+                      backgroundColor: '#8B0000', 
+                      borderColor: '#8B0000',
+                      color: 'white',
+                      borderRadius: '20px',
+                      padding: '8px 20px'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#6B0000'} 
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#8B0000'}
+                  >
+                    Order Takeaway
+                  </Button>
+                  <Button 
+                    as={Link} 
+                    to="/reservation" 
+                    size="md" 
+                    className="mb-3"
+                    style={{ 
+                      backgroundColor: 'white', 
+                      borderColor: 'white',
+                      color: '#000',
+                      borderRadius: '20px',
+                      padding: '8px 20px'
+                    }}
+                    onMouseOver={(e) => {
+                      e.target.style.backgroundColor = '#f8f9fa';
+                      e.target.style.borderColor = '#f8f9fa';
+                    }} 
+                    onMouseOut={(e) => {
+                      e.target.style.backgroundColor = 'white';
+                      e.target.style.borderColor = 'white';
+                    }}
+                  >
+                    Book a Table
+                  </Button>
                 </motion.div>
               </Col>
             </Row>

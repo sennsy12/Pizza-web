@@ -1,7 +1,4 @@
-// components/ReservationStatsCards.js
-
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Row, Spinner } from 'react-bootstrap';
 import { fetchReservationStats } from '../handlers/reservationHandler';
 import { FaUsers, FaCalendarAlt, FaUserFriends, FaClock } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -10,14 +7,17 @@ const StatCard = ({ title, value, icon }) => (
   <motion.div
     whileHover={{ scale: 1.05 }}
     whileTap={{ scale: 0.95 }}
+    className="h-full"
   >
-    <Card className="text-center h-100 shadow-sm">
-      <Card.Body className="d-flex flex-column justify-content-center">
-        {icon}
-        <Card.Title className="mt-3 mb-2">{title}</Card.Title>
-        <Card.Text className="fs-4 fw-bold">{value}</Card.Text>
-      </Card.Body>
-    </Card>
+    <div className="bg-white rounded-xl shadow-depth p-6 h-full transition-all duration-300 hover:shadow-lg">
+      <div className="flex flex-col items-center justify-center h-full space-y-4">
+        <div className="p-3 bg-primary-50 rounded-full text-primary-500">
+          {React.cloneElement(icon, { className: "w-6 h-6" })}
+        </div>
+        <h3 className="text-lg font-medium text-dark-600 text-center">{title}</h3>
+        <p className="text-3xl font-bold text-dark-900">{value}</p>
+      </div>
+    </div>
   </motion.div>
 );
 
@@ -41,35 +41,61 @@ const ReservationStatsCards = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-5">
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
+      <div className="flex justify-center items-center py-12">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!stats) {
-    return <p className="text-center py-5 text-muted">No statistics available.</p>;
+    return (
+      <div className="text-center py-12 text-dark-400">
+        No statistics available
+      </div>
+    );
   }
 
   const statCards = [
-    { title: 'Total Guests', value: stats.totalGuests, icon: <FaUsers size={30} className="text-primary" /> },
-    { title: 'Total Reservations', value: stats.totalReservations, icon: <FaCalendarAlt size={30} className="text-success" /> },
-    { title: 'Guests Today', value: stats.guestsToday, icon: <FaUserFriends size={30} className="text-info" /> },
-    { title: 'Reservations Today', value: stats.reservationsToday, icon: <FaCalendarAlt size={30} className="text-warning" /> },
-    { title: 'Avg. Guests per Reservation', value: (parseFloat(stats.averageGuestsPerReservation) || 0).toFixed(2), icon: <FaUsers size={30} className="text-danger" /> },
-    { title: 'Latest Reservation Today', value: new Date(stats.latestReservationToday).toLocaleTimeString(), icon: <FaClock size={30} className="text-primary" /> },
+    { 
+      title: 'Total Guests', 
+      value: stats.totalGuests, 
+      icon: <FaUsers className="text-primary-500" />
+    },
+    { 
+      title: 'Total Reservations', 
+      value: stats.totalReservations, 
+      icon: <FaCalendarAlt className="text-green-500" />
+    },
+    { 
+      title: 'Guests Today', 
+      value: stats.guestsToday, 
+      icon: <FaUserFriends className="text-blue-500" />
+    },
+    { 
+      title: 'Reservations Today', 
+      value: stats.reservationsToday, 
+      icon: <FaCalendarAlt className="text-amber-500" />
+    },
+    { 
+      title: 'Avg. Guests/Reservation', 
+      value: (parseFloat(stats.averageGuestsPerReservation) || 0).toFixed(2), 
+      icon: <FaUsers className="text-red-500" />
+    },
+    { 
+      title: 'Latest Reservation', 
+      value: new Date(stats.latestReservationToday).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), 
+      icon: <FaClock className="text-primary-500" />
+    },
   ];
 
   return (
-    <Row className="g-4 py-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 py-8 px-4 sm:px-6">
       {statCards.map((card, index) => (
-        <Col key={index} sm={2} md={2}>
+        <div key={index} className="h-full">
           <StatCard {...card} />
-        </Col>
+        </div>
       ))}
-    </Row>
+    </div>
   );
 };
 

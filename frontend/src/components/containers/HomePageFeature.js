@@ -1,133 +1,149 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaPizzaSlice, FaLeaf, FaWineGlassAlt, FaUtensils, FaTruck, FaUsers } from 'react-icons/fa';
-import styled from 'styled-components';
 
-const StyledCard = styled(motion.div)`
-  background: rgba(255, 107, 107, 0.15);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 215, 255, 0.2);
-  transition: all 0.3s ease;
-  height: 100%;
-  cursor: pointer;
-`;
+const MenuItem = ({ item }) => (
+  <div className="rounded-lg shadow-md overflow-hidden bg-white">
+    <img
+      src={`${item.img}.png`}
+      alt={item.name}
+      className="w-full h-48 object-cover object-center"
+    />
+    <div className="p-4">
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{item.name}</h3>
+          {item.tags && item.tags.length > 0 && (
+            <span className="inline-block bg-gray-200 text-gray-700 text-xs rounded-full px-2 py-1 mt-1">
+              {item.tags[0]}
+            </span>
+          )}
+        </div>
+        <span className="text-lg font-semibold text-primary-600">${item.price}</span>
+      </div>
+      <p className="text-gray-600 text-sm">{item.description}</p>
+    </div>
+  </div>
+);
 
-const IconWrapper = styled.div`
-  font-size: 3rem;
-  color: #fff;
-  margin-bottom: 1rem;
-`;
+const MenuSection = ({ title, items }) => (
+  <section className="mb-12">
+     <h2 className="text-3xl font-serif text-dark-700 mb-4 text-center relative after:content-[''] after:block after:w-20 after:h-1 after:mx-auto after:bg-red-500 after:mt-2">
+        {title}
+    </h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {items.map((item) => (
+        <MenuItem key={item.id} item={item} />
+      ))}
+    </div>
+  </section>
+);
 
-const FeatureTitle = styled(Card.Title)`
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-  color: #fff;
-`;
-
-const FeatureText = styled(Card.Text)`
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.85);
-`;
-
-const ExpandedContent = styled(motion.div)`
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 10px;
-  margin-top: 1rem;
-`;
 
 const FeatureSection = () => {
-  const [expandedIndex, setExpandedIndex] = useState(null);
 
-  const features = [
-    {
-      icon: <FaPizzaSlice />,
-      title: "Authentic Wood-Fired Pizzas",
-      description: "Experience the crispy, smoky perfection of our traditional wood-fired pizzas.",
-      expanded: "Our pizzas are baked in a custom-built wood-fired oven, reaching temperatures of up to 900°F for that perfect crispy crust and smoky flavor."
-    },
-    {
-      icon: <FaLeaf />,
-      title: "Fresh, Local Ingredients",
-      description: "We source the finest local ingredients to ensure unmatched quality and flavor.",
-      expanded: "We partner with local farms to bring you the freshest, seasonal ingredients. Our menu changes regularly to showcase the best produce available."
-    },
-    {
-      icon: <FaWineGlassAlt />,
-      title: "Cozy Dining Experience",
-      description: "Enjoy your meal in our warm, inviting atmosphere with a curated wine selection.",
-      expanded: "Our sommelier has carefully curated a wine list to perfectly complement our pizzas, featuring both local and international selections."
-    },
-    {
-      icon: <FaUtensils />,
-      title: "Diverse Menu Options",
-      description: "From classic Margherita to gourmet specialties, we have something for everyone.",
-      expanded: "Our menu includes vegetarian, vegan, and gluten-free options. We also offer custom pizzas where you can choose your own toppings."
-    },
-    {
-      icon: <FaTruck />,
-      title: "Fast & Reliable Delivery",
-      description: "Can't dine in? Enjoy our pizzas in the comfort of your home with our delivery service.",
-      expanded: "We use state-of-the-art thermal bags to ensure your pizza arrives hot and fresh. Track your order in real-time through our mobile app."
-    },
-    {
-      icon: <FaUsers />,
-      title: "Community Focused",
-      description: "We're more than just a pizzeria - we're a part of the community.",
-      expanded: "We regularly host community events, support local charities, and offer pizza-making classes for kids and adults alike."
-    },
-  ];
+  const signatureItems = {
+     pizzas: [
+      {
+        id: 1,
+        name: "Margherita Pizza",
+        description: "Classic pizza with tomatoes, mozzarella, and basil.",
+        price: 8.99,
+          img: 'margherita-pizza',
+           tags: ["Classic"],
+
+      },
+      {
+         id: 2,
+        name: "Pepperoni Pizza",
+        description: "Pizza topped with pepperoni and cheese.",
+        price: 9.49,
+            img: 'pepperoni-pizza',
+          tags: ["Classic"],
+      },
+      {
+        id: 3,
+        name: "Cheese Pizza",
+        description: "Classic cheese pizza with a golden crust.",
+        price: 7.99,
+          img: 'cheese-pizza',
+          tags: ["Classic"],
+      },
+    ],
+     sides: [
+        {
+          id: 4,
+          name: "Mozzarella Sticks",
+          description: "Crispy fried mozzarella with marinara sauce.",
+           price: 5.99,
+              img: 'mozzarella-sticks',
+           tags: ["Appetizers"],
+
+        },
+          {
+            id: 5,
+            name: "Garlic Bread",
+             description: "Toasted bread with garlic butter and herbs.",
+             price: 3.99,
+                 img: 'garlic-bread',
+                 tags: ["Appetizers"],
+          },
+       {
+         id: 6,
+          name: "Chicken Wings",
+            description: "Spicy buffalo chicken wings with ranch dressing.",
+              price: 7.99,
+               img: 'chicken-wings',
+             tags: ["Appetizers"],
+
+       },
+     ],
+       desserts: [
+        {
+          id: 7,
+          name: "Pudding",
+             description: "Pudding med karamel.",
+               price: 5.00,
+                 img: 'pudding',
+               tags: ["Desserts"],
+        },
+          {
+            id: 8,
+            name: "Chocolate Cake",
+            description: "Rich and moist chocolate layer cake.",
+            price: 4.99,
+              img: 'chocolate-cake',
+                tags: ["Desserts"],
+          },
+           {
+            id: 9,
+             name: "Ice Cream Sundae",
+                description: "Vanilla ice cream with chocolate sauce and nuts.",
+                price: 3.99,
+                   img: 'ice-cream-sundae',
+                 tags: ["Desserts"],
+           }
+     ]
+
+  };
+
 
   return (
-    <Container fluid className="py-5" style={{ borderRadius: '20px', background: 'linear-gradient(135deg, rgba(255, 107, 107, 0.85), rgba(255, 142, 83, 0.85))' }}>
-      <Container className="py-5">
-        <motion.h2 
-          className="text-center mb-5 text-white"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Why Choose Our Pizzeria?
-        </motion.h2>
-        <Row className="g-4">
-          {features.map((feature, index) => (
-            <Col md={4} key={index}>
-              <StyledCard
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-              >
-                <Card.Body className="text-center p-4">
-                  <IconWrapper>{feature.icon}</IconWrapper>
-                  <FeatureTitle>{feature.title}</FeatureTitle>
-                  <FeatureText>{feature.description}</FeatureText>
-                  <AnimatePresence>
-                    {expandedIndex === index && (
-                      <ExpandedContent
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.5 }}
-                      >
-                        <FeatureText>{feature.expanded}</FeatureText>
-                      </ExpandedContent>
-                    )}
-                  </AnimatePresence>
-                </Card.Body>
-              </StyledCard>
-            </Col>
-          ))}
-        </Row>
-      </Container>
-    </Container>
+    <div className="bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <MenuSection title="Our Signature Pizzas" items={signatureItems.pizzas} />
+            <MenuSection title="Appetizers" items={signatureItems.sides} />
+            <MenuSection title="Desserts" items={signatureItems.desserts} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
   );
 };
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import { Table, Button, Container, Row, Col, Form, Spinner, Modal, Card } from 'react-bootstrap';
 import { fetchReservations, deleteReservation, updateReservation } from '../handlers/adminHandler';
 import ReservationStatsCards from '../admin/ReservationStatsCards';
 import DatePicker from 'react-datepicker';
@@ -12,7 +11,13 @@ registerLocale('nb', nb);
 setDefaultLocale('nb');
 
 const CustomInput = forwardRef(({ value, onClick }, ref) => (
-  <Form.Control onClick={onClick} ref={ref} value={value} readOnly />
+  <div
+    onClick={onClick}
+    ref={ref}
+    className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 cursor-pointer"
+  >
+    {value || 'Select date'}
+  </div>
 ));
 
 const AdminReservations = () => {
@@ -161,212 +166,254 @@ const AdminReservations = () => {
   
 
   return (
-    <Container fluid className="py-4">
-      <Row className="mb-4">
-        <Col>
-          <h1 className="text-primary">All Reservations</h1>
-        </Col>
-      </Row>
-      <ReservationStatsCards />
-      <Card className="mb-4">
-        <Card.Body>
-          <Row className="align-items-end">
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>Start Date</Form.Label>
-                <DatePicker
-                  selected={startDate}
-                  onChange={date => setStartDate(date)}
-                  selectsStart
-                  startDate={startDate}
-                  endDate={endDate}
-                  dateFormat="dd.MM.yyyy"
-                  className="form-control"
-                  locale="nb"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={3}>
-              <Form.Group>
-                <Form.Label>End Date</Form.Label>
-                <DatePicker
-                  selected={endDate}
-                  onChange={date => setEndDate(date)}
-                  selectsEnd
-                  startDate={startDate}
-                  endDate={endDate}
-                  minDate={startDate}
-                  dateFormat="dd.MM.yyyy"
-                  className="form-control"
-                  locale="nb"
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Search</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Search by name or email"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </Form.Group>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card>
-      {loading ? (
-        <div className="text-center">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+    <div className="min-h-screen bg-dark-50 p-6 sm:p-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-primary-600 mb-4">All Reservations</h1>
+          <ReservationStatsCards />
         </div>
-      ) : (
-        <Card>
-          <Card.Body>
-            <div className="table-responsive">
-              <Table striped bordered hover>
-                <thead>
+
+        {/* Filters Section */}
+        <div className="bg-white rounded-xl shadow-depth p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {/* Date Pickers */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-dark-700">Start Date</label>
+              <DatePicker
+                selected={startDate}
+                onChange={setStartDate}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                dateFormat="dd.MM.yyyy"
+                customInput={<CustomInput />}
+                locale="nb"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-dark-700">End Date</label>
+              <DatePicker
+                selected={endDate}
+                onChange={setEndDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                dateFormat="dd.MM.yyyy"
+                customInput={<CustomInput />}
+                locale="nb"
+              />
+            </div>
+
+            {/* Search Input */}
+            <div className="space-y-2 lg:col-span-2">
+              <label className="block text-sm font-medium text-dark-700">Search</label>
+              <input
+                type="text"
+                placeholder="Search by name or email"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Reservations Table */}
+        {loading ? (
+          <div className="flex justify-center items-center h-32">
+            <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl shadow-depth overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-dark-50 border-b border-dark-200">
                   <tr>
-                    <th onClick={() => handleSort('confirmationNumber')} style={{ cursor: 'pointer' }}>
-                      Confirmation Number {sortField === 'confirmationNumber' && (sortDirection === 'asc' ? '▲' : '▼')}
+                    {['confirmationNumber', 'name', 'email', 'phone', 'guests', 'reservationTime'].map((field) => (
+                      <th
+                        key={field}
+                        onClick={() => handleSort(field)}
+                        className="px-6 py-4 text-left text-sm font-medium text-dark-500 uppercase tracking-wider cursor-pointer hover:bg-dark-100"
+                      >
+                        <div className="flex items-center gap-1">
+                          {field.replace(/([A-Z])/g, ' $1')}
+                          {sortField === field && (
+                            <span className="text-primary-500">
+                              {sortDirection === 'asc' ? '↑' : '↓'}
+                            </span>
+                          )}
+                        </div>
+                      </th>
+                    ))}
+                    <th className="px-6 py-4 text-left text-sm font-medium text-dark-500 uppercase tracking-wider">
+                      Actions
                     </th>
-                    <th onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
-                      Name {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
-                    </th>
-                    <th onClick={() => handleSort('email')} style={{ cursor: 'pointer' }}>
-                      Email {sortField === 'email' && (sortDirection === 'asc' ? '▲' : '▼')}
-                    </th>
-                    <th>Phone</th>
-                    <th>Guests</th>
-                    <th onClick={() => handleSort('reservationTime')} style={{ cursor: 'pointer' }}>
-                      Time {sortField === 'reservationTime' && (sortDirection === 'asc' ? '▲' : '▼')}
-                    </th>
-                    <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-dark-100">
                   {filteredReservations.map((reservation) => (
-                    <tr key={reservation.id}>
-                      <td>{reservation.confirmationNumber}</td>
-                      <td>{reservation.name}</td>
-                      <td>{reservation.email}</td>
-                      <td>{reservation.phone}</td>
-                      <td>{reservation.guests}</td>
-                      <td>{formatReservationTime(reservation.reservationTime)}</td>
-                      <td>
-                        <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleEdit(reservation)}>
-                          Edit
-                        </Button>
-                        <Button variant="outline-danger" size="sm" onClick={() => handleDelete(reservation)}>
-                          Delete
-                        </Button>
+                    <tr key={reservation.id} className="hover:bg-dark-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {reservation.confirmationNumber}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {reservation.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {reservation.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {reservation.phone}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {reservation.guests}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-dark-900">
+                        {formatReservationTime(reservation.reservationTime)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEdit(reservation)}
+                            className="px-3 py-1 text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(reservation)}
+                            className="px-3 py-1 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
-              </Table>
+              </table>
             </div>
-          </Card.Body>
-        </Card>
-      )}
-      {!loading && filteredReservations.length === 0 && (
-        <p className="text-center">No reservations found.</p>
-      )}
+          </div>
+        )}
 
-      {/* Confirmation Modal */}
-      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirm Deletion</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to delete the reservation for {selectedReservation?.name} with phone number {selectedReservation?.phone}?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowConfirmModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="danger" onClick={confirmDelete}>
-            Delete
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        {/* Empty State */}
+        {!loading && filteredReservations.length === 0 && (
+          <div className="text-center p-8 bg-white rounded-xl shadow-depth">
+            <p className="text-dark-500">No reservations found.</p>
+          </div>
+        )}
 
-      {/* Edit Modal */}
-<Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
-  <Modal.Header closeButton>
-    <Modal.Title>Edit Reservation</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <Form>
-      <Form.Group className="mb-3">
-        <Form.Label>Name</Form.Label>
-        <Form.Control
-          type="text"
-          name="name"
-          value={editFormData.name}
-          onChange={handleEditChange}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Email</Form.Label>
-        <Form.Control
-          type="email"
-          name="email"
-          value={editFormData.email}
-          onChange={handleEditChange}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Phone</Form.Label>
-        <Form.Control
-          type="text"
-          name="phone"
-          value={editFormData.phone}
-          onChange={handleEditChange}
-          readOnly
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Guests</Form.Label>
-        <Form.Control
-          type="number"
-          name="guests"
-          value={editFormData.guests}
-          onChange={handleEditChange}
-        />
-      </Form.Group>
+        {/* Delete Confirmation Modal */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-depth w-full max-w-md">
+              <div className="p-6 border-b border-dark-100">
+                <h3 className="text-lg font-semibold text-dark-900">Confirm Deletion</h3>
+              </div>
+              <div className="p-6 text-dark-600">
+                Are you sure you want to delete the reservation for {selectedReservation?.name} with phone number {selectedReservation?.phone}?
+              </div>
+              <div className="flex justify-end gap-3 p-6 bg-dark-50">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="px-4 py-2 text-dark-600 hover:text-dark-900 rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
-      <Form.Group className="mb-3">
-        <Form.Label>Reservation Time</Form.Label>
-        <div className="custom-date-picker-wrapper">
-          <DatePicker
-            selected={editFormData.reservationTime}
-            onChange={handleEditDateChange}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={15}
-            dateFormat="dd.MM.yyyy HH:mm"
-            className="form-control"
-            locale="nb"
-          />
-        </div>
-      </Form.Group>
-    </Form>
-  </Modal.Body>
-  <Modal.Footer>
-    <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-      Cancel
-    </Button>
-    <Button variant="primary" onClick={handleEditSubmit}>
-      Save Changes
-    </Button>
-  </Modal.Footer>
-</Modal>
-
-
-    </Container>
+        {/* Edit Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-xl shadow-depth w-full max-w-md">
+              <div className="p-6 border-b border-dark-100">
+                <h3 className="text-lg font-semibold text-dark-900">Edit Reservation</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-dark-700">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={editFormData.name}
+                    onChange={handleEditChange}
+                    className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-dark-700">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={editFormData.email}
+                    onChange={handleEditChange}
+                    className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-dark-700">Phone</label>
+                  <input
+                    type="text"
+                    name="phone"
+                    value={editFormData.phone}
+                    onChange={handleEditChange}
+                    readOnly
+                    className="w-full px-4 py-2 border border-dark-300 rounded-lg bg-dark-50 cursor-not-allowed"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-dark-700">Guests</label>
+                  <input
+                    type="number"
+                    name="guests"
+                    value={editFormData.guests}
+                    onChange={handleEditChange}
+                    className="w-full px-4 py-2 border border-dark-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-dark-700">Reservation Time</label>
+                  <DatePicker
+                    selected={editFormData.reservationTime}
+                    onChange={handleEditDateChange}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={15}
+                    dateFormat="dd.MM.yyyy HH:mm"
+                    customInput={<CustomInput />}
+                    locale="nb"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 p-6 bg-dark-50">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-dark-600 hover:text-dark-900 rounded-md transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleEditSubmit}
+                  className="px-4 py-2 bg-primary-500 text-white rounded-md hover:bg-primary-600 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
